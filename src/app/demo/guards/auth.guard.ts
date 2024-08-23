@@ -6,10 +6,12 @@ export const authGuard = async () => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    if (authService.isAuthenticated()) {
-        return true;
-    } else {
-        await router.navigate(['/auth/login']);
-        return false;
-    }
+    return true;
+
+    // if (authService.isAuthenticated()) {
+    //     return true;
+    // } else {
+    //     await router.navigate(['/auth/login']);
+    //     return false;
+    // }
 };
