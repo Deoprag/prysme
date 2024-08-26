@@ -17,13 +17,15 @@ export class AppMenuComponent implements OnInit {
             {
                 label: 'Home',
                 items: [
-                    { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] }
+                    { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] },
+                    { label: 'Metas', icon: 'pi pi-fw pi-chart-line\n', routerLink: ['/goal'] },
                 ]
             },
             {
-                label: 'UI Components',
+                label: 'Clientes',
                 items: [
-                    { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
+                    { label: 'Lista', icon: 'pi pi-fw pi-book', routerLink: ['/customer/list'] },
+                    { label: 'Carteira', icon: 'pi pi-fw pi-wallet', routerLink: ['/wallet'] },
                 ]
             },
             {
