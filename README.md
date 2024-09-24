@@ -1,27 +1,52 @@
 # Prysme
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.4.
+Prysme é um CRM projetado para proporcionar uma experiência intuitiva e eficiente na gestão de clientes e vendas.
 
-## Development server
+## Índice
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- [Introdução](#introdução)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Instalação](#instalação)
+- [Uso](#uso)
+- [Licença](#licença)
 
-## Code scaffolding
+## Introdução
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+O front-end do Prysme permite que os usuários interajam facilmente com o sistema, oferecendo uma interface limpa e responsiva que se comunica com a API do Prysme.
 
-## Build
+## Funcionalidades
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Visualização e gerenciamento de clientes
+- Criação e edição de orçamentos e vendas
+- Relatórios personalizados
+- Controle de metas individuais e por equipe
+- Autenticação e controle de acesso usando JWT
 
-## Running unit tests
+## Tecnologias
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
+- **Framework:** [Angular](https://angular.io/)
+- **Componentes:** [PrimeNG](https://www.primefaces.org/primeng/)
+- **Estilos:** [PrimeFlex](https://www.primefaces.org/primeflex/)
+- **Gerenciador de Pacotes:** [npm](https://www.npmjs.com/)
 
-## Running end-to-end tests
+## Instalação
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+1. Clone o repositório:<br>
+    - git clone https://github.com/Deoprag/prysme.git<br>
+    - cd prysme
+   
+2. Instale as dependências:
+    - npm install
 
-## Further help
+4. Execute a aplicação:
+    - ng serve
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Uso
+
+O front-end estará disponível em http://localhost:4200. Acesse a aplicação no navegador para interagir com o sistema.
+
+## Licença
+
+Este projeto está licenciado sob a MIT License.
