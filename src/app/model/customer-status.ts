@@ -1,0 +1,11 @@
+export enum CustomerStatus {
+    NEW = 'NEW',
+    CONTACT = 'CONTACT',
+    PRESENTATION = 'PRESENTATION',
+    PROPOSAL = 'PROPOSAL',
+    NEGOTIATION = 'NEGOTIATION',
+    CLOSURE = 'CLOSURE',
+    FINALIZED = 'FINALIZED',
+    LOST = 'LOST',
+    DELETED = 'DELETED',
+}
