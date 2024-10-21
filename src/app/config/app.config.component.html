@@ -13,22 +13,26 @@
         <div class="flex">
             <div class="field-radiobutton flex-1">
                 <p-radioButton name="menuMode" value="static" [(ngModel)]="menuMode" inputId="mode1"></p-radioButton>
-                <label for="mode1">Estático</label>
+                <label>Estático</label>
             </div>
             <div class="field-radiobutton">
                 <p-radioButton name="menuMode" value="overlay" [(ngModel)]="menuMode" inputId="mode2"></p-radioButton>
-                <label for="mode2">Sobreposto</label>
+                <label>Sobreposto</label>
             </div>
         </div>
     </ng-container>
 
-    <h5>Estilo da página</h5>
+    <h5>Tema</h5>
+    <div class="flex">
+        <div class="field-radiobutton flex-1">
+            <p-radioButton name="theme" value="dark" (ngModelChange)="changeTheme('dark', 'dark')" [(ngModel)]="theme" inputId="themeDark"></p-radioButton>
+            <label>Escuro</label>
+        </div>
+        <div class="field-radiobutton">
+            <p-radioButton name="theme" value="light" (ngModelChange)="changeTheme('light', 'light')" [(ngModel)]="theme" inputId="themeLight"></p-radioButton>
+            <label>Claro</label>
+        </div>
+    </div>
     <div class="grid mt-2 border-round p-2 w-12rem gap-7">
-        <button class="p-link ml-2 w-2rem h-2rem" (click)="changeTheme('md-light-deeppurple', 'light')" title="Modo Claro">
-            <img src="../../assets/layout/images/themes/md-light-deeppurple.svg" class="w-2rem h-2rem" alt="Modo Claro">
-        </button>
-        <button class="p-link w-2rem h-2rem" (click)="changeTheme('md-dark-deeppurple', 'dark')" title="Modo Escuro">
-            <img src="../../assets/layout/images/themes/md-dark-deeppurple.svg" class="w-2rem h-2rem" alt="Modo Escuro">
-        </button>
     </div>
 </p-sidebar>

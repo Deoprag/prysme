@@ -9,15 +9,10 @@ import { LayoutService } from 'src/app/service/app.layout.service';
     templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-
     items!: MenuItem[];
-
     products!: Product[];
-
     chartData: any;
-
     chartOptions: any;
-
     subscription!: Subscription;
 
     constructor(private productService: ProductService, public layoutService: LayoutService) {

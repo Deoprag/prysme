@@ -13,7 +13,6 @@ export class AppConfigComponent {
 
     constructor(
         public layoutService: LayoutService,
-        public menuService: MenuService
     ) {}
 
     get visible(): boolean {
@@ -40,23 +39,6 @@ export class AppConfigComponent {
         this.layoutService.config.update((config) => ({
             ...config,
             menuMode: _val,
-        }));
-    }
-
-    get inputStyle(): string {
-        return this.layoutService.config().inputStyle;
-    }
-    set inputStyle(_val: string) {
-        this.layoutService.config().inputStyle = _val;
-    }
-
-    get ripple(): boolean {
-        return this.layoutService.config().ripple;
-    }
-    set ripple(_val: boolean) {
-        this.layoutService.config.update((config) => ({
-            ...config,
-            ripple: _val,
         }));
     }
 

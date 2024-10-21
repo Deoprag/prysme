@@ -1,1 +1,252 @@
-<p>customer works!</p>
+<p-toast/>
+<spinner [show]="spinner"></spinner>
+<div class="p-datatable-wrapper p-m-3 shadow-3">
+    <p-table [value]="customers"
+             [paginator]="true"
+             [scrollable]="true"
+             [rows]="10">
+        <ng-template pTemplate="caption">
+            <div class="p-mt-4 flex justify-content-between gap-2">
+                <div class="p-2 flex gap-2">
+                    <button pButton icon="pi pi-print" class="p-button-help p-mr-2"
+                            (click)="printCustomers()"></button>
+                </div>
+                <div class="text-4xl">Clientes</div>
+                <div class="p-2 flex gap-2">
+                    <button pButton icon="pi pi-plus" class="p-button-success p-mr-2" (click)="customerDialog = true"></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th></th>
+                <th class="font-semibold">CPF/CNPJ</th>
+                <th class="font-semibold">Nome</th>
+                <th class="font-semibold">Email</th>
+                <th class="font-semibold">Status</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-customer>
+            <tr>
+                <td>
+                    <div class="flex gap-2">
+                        <button class="p p-button-info p-button-raised" pButton icon="pi pi-pencil"
+                                (click)="editCustomer(customer)"></button>
+                        <button class="p p-button-danger p-button-raised" pButton icon="pi pi-trash"
+                                (click)="deleteCustomer(customer)"></button>
+                    </div>
+                </td>
+                <td>{{ customer.cpfCnpj }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.email }}</td>
+                <td *ngIf="customer.customerStatus === 'NEW'" class="text-green-300 font-semibold">{{ customer.customerStatus }}</td>
+                <td *ngIf="customer.customerStatus !== 'NEW'">{{ customer.customerStatus }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <p-dialog header="Novo Cliente"
+              [(visible)]="customerDialog"
+              [modal]="true"
+              [style]="{width: '55vw'}"
+              [breakpoints]="{ '1379px': '75vw', '767px': '90vw' }"
+              [contentStyle]="{'overflow': 'visible'}"
+              [maximizable]="true"
+              [draggable]="false">
+        <div class="grid p-fluid p-2">
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="cpfCnpj">CPF/CNPJ</label>
+                    <input pInputText
+                           id="cpfCnpj"
+                           [(ngModel)]="customer.cpfCnpj"
+                           (input)="checkCpfCnpjValue($event)"
+                           maxlength="18"
+                           (blur)="formatCpfCnpj()"
+                           required
+                           placeholder="Digite o CPF ou CNPJ"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-8">
+                <div class="p-field">
+                    <label for="name">Nome</label>
+                    <input pInputText
+                           id="name"
+                           [(ngModel)]="customer.name"
+                           required
+                           placeholder="Digite o nome"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-8">
+                <div class="p-field">
+                    <label for="cpfCnpj">Nome Fantasia</label>
+                    <input pInputText
+                           id="tradeName"
+                           [(ngModel)]="customer.tradeName"
+                           placeholder="Digite o nome fantasia (Somente PJ)"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="customerStatus">Status</label>
+                    <p-dropdown
+                        id="customerStatus"
+                        [options]="customerStatusOptions"
+                        [(ngModel)]="customer.customerStatus"
+                        required/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-8">
+                <div class="p-field">
+                    <label for="email">Email</label>
+                    <input pInputText
+                           id="email"
+                           [(ngModel)]="customer.email"
+                           required
+                           placeholder="Digite o email"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="birthFoundationDate">Nascimento/Fundação</label>
+                    <p-calendar
+                        id="birthFoundationDate"
+                        [(ngModel)]="customer.birthFoundationDate"
+                        [showIcon]="true"
+                        [iconDisplay]="'input'"
+                        dateFormat="dd/mm/yy"
+                        required
+                        placeholder="Selecione a data"
+                    />
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-3">
+                <div class="p-field">
+                    <label for="email">Inscrição Estadual</label>
+                    <p-inputMask
+                        id="stateRegistration"
+                        [(ngModel)]="customer.stateRegistration"
+                        mask="999.999.999.999"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-9">
+                <div class="p-field">
+                    <label for="email">Telefones</label>
+                    <p-chips
+                        pTooltip="Aperte ENTER para inserir (max. 2)"
+                        tooltipEvent="focus"
+                        [max]="2"
+                        [(ngModel)]="customer.phoneNumbers"
+                        (onAdd)="onPhoneAdd($event)"
+                        required
+                        tooltipPosition="right">
+                        <ng-template let-item pTemplate="item">
+                            {{ item | phoneFormat }}
+                        </ng-template>
+                    </p-chips>
+                </div>
+            </div>
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="postalCode">CEP</label>
+                    <p-inputMask
+                        id="postalCode"
+                        [(ngModel)]="customer.address.postalCode"
+                        mask="99999-999"
+                        placeholder="Digite o CEP"
+                        (onBlur)="searchPostalCode()"
+                        required/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-8">
+                <div class="p-field">
+                    <label for="street">Logradouro</label>
+                    <input pInputText
+                           id="street"
+                           [(ngModel)]="customer.address.street"
+                           required
+                           placeholder="Digite o logradouro"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-2">
+                <div class="p-field">
+                    <label for="number">Número</label>
+                    <input pInputText
+                           id="number"
+                           [(ngModel)]="customer.address.number"
+                           required
+                           placeholder="Número"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-6">
+                <div class="p-field">
+                    <label for="complement">Complemento</label>
+                    <input pInputText
+                           id="complement"
+                           [(ngModel)]="customer.address.complement"
+                           placeholder="Complemento"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="neighborhood">Bairro</label>
+                    <input pInputText
+                           id="neighborhood"
+                           [(ngModel)]="customer.address.neighborhood"
+                           required
+                           placeholder="Digite o bairro"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-6">
+                <div class="p-field">
+                    <label for="city">Cidade</label>
+                    <input pInputText
+                           id="city"
+                           [(ngModel)]="customer.address.city"
+                           required
+                           placeholder="Digite a cidade"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-2">
+                <div class="p-field">
+                    <label for="state">Estado</label>
+                    <input pInputText
+                           id="state"
+                           [(ngModel)]="customer.address.state"
+                           maxlength="2"
+                           required
+                           placeholder="UF"/>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="country">País</label>
+                    <input pInputText
+                           id="country"
+                           [(ngModel)]="customer.address.country"
+                           required
+                           placeholder="Digite o país"/>
+                </div>
+            </div>
+        </div>
+        <p-footer>
+            <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger" (click)="customerDialog = false"></button>
+            <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
+                    (click)="saveCustomer()"></button>
+        </p-footer>
+    </p-dialog>
+</div>

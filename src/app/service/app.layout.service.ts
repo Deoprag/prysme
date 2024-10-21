@@ -69,7 +69,7 @@ export class LayoutService {
     }
 
     private getStoredTheme(): string {
-        return localStorage.getItem(this.THEME_KEY) || 'bootstrap4-light-blue';
+        return localStorage.getItem(this.THEME_KEY) || 'light';
     }
 
     private getStoredColorScheme(): string {
