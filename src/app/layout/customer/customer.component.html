@@ -1,4 +1,5 @@
 <p-toast/>
+<p-confirmDialog/>
 <spinner [show]="spinner"></spinner>
 <div class="p-datatable-wrapper p-m-3 shadow-3">
     <p-table [value]="customers"
@@ -9,11 +10,12 @@
             <div class="p-mt-4 flex justify-content-between gap-2">
                 <div class="p-2 flex gap-2">
                     <button pButton icon="pi pi-print" class="p-button-help p-mr-2"
-                            (click)="printCustomers()"></button>
+                            (click)="true"></button>
                 </div>
                 <div class="text-4xl">Clientes</div>
                 <div class="p-2 flex gap-2">
-                    <button pButton icon="pi pi-plus" class="p-button-success p-mr-2" (click)="customerDialog = true"></button>
+                    <button pButton icon="pi pi-plus" class="p-button-success p-mr-2"
+                            (click)="customerDialog = true"></button>
                 </div>
             </div>
         </ng-template>
@@ -23,7 +25,8 @@
                 <th class="font-semibold">CPF/CNPJ</th>
                 <th class="font-semibold">Nome</th>
                 <th class="font-semibold">Email</th>
-                <th class="font-semibold">Status</th>
+                <th class="font-semibold">Data Atualização</th>
+                <th class="font-semibold text-center">Status</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-customer>
@@ -33,14 +36,19 @@
                         <button class="p p-button-info p-button-raised" pButton icon="pi pi-pencil"
                                 (click)="editCustomer(customer)"></button>
                         <button class="p p-button-danger p-button-raised" pButton icon="pi pi-trash"
-                                (click)="deleteCustomer(customer)"></button>
+                                (click)="confirmDeleteCustomer(customer)"></button>
                     </div>
                 </td>
-                <td>{{ customer.cpfCnpj }}</td>
+                <td>{{ formatCpfCnpj(customer.cpfCnpj) }}</td>
                 <td>{{ customer.name }}</td>
                 <td>{{ customer.email }}</td>
-                <td *ngIf="customer.customerStatus === 'NEW'" class="text-green-300 font-semibold">{{ customer.customerStatus }}</td>
-                <td *ngIf="customer.customerStatus !== 'NEW'">{{ customer.customerStatus }}</td>
+                <td>{{ customer.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
+                <td class="text-center" [ngClass]="{
+                      'text-green-300 font-semibold': customer.customerStatus === 'NEW',
+                      'text-red-300': customer.customerStatus === 'LOST'}">
+                    <p-tag [severity]="customer.customerStatus === 'NEW' ? 'success' : customer.customerStatus === 'LOST' ? 'danger' : 'primary'"
+                        value="{{ customer.customerStatus }}"/>
+                </td>
             </tr>
         </ng-template>
     </p-table>
@@ -62,7 +70,7 @@
                            [(ngModel)]="customer.cpfCnpj"
                            (input)="checkCpfCnpjValue($event)"
                            maxlength="18"
-                           (blur)="formatCpfCnpj()"
+                           (blur)="customer.cpfCnpj = formatCpfCnpj(customer.cpfCnpj)"
                            required
                            placeholder="Digite o CPF ou CNPJ"/>
                 </div>
@@ -244,7 +252,8 @@
             </div>
         </div>
         <p-footer>
-            <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger" (click)="customerDialog = false"></button>
+            <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                    (click)="customerDialog = false"></button>
             <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
                     (click)="saveCustomer()"></button>
         </p-footer>

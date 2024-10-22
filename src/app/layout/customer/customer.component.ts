@@ -11,19 +11,21 @@ import {InputMaskModule} from 'primeng/inputmask';
 import {DialogModule} from "primeng/dialog";
 import {ChipsModule} from "primeng/chips";
 import {DropdownModule} from "primeng/dropdown";
-import {DatePipe, NgIf, NgStyle} from "@angular/common";
+import {DatePipe, NgClass, NgIf, NgStyle} from "@angular/common";
 import {CalendarModule} from "primeng/calendar";
 import {ListboxModule} from "primeng/listbox";
 import {InputGroupModule} from "primeng/inputgroup";
 import {TooltipModule} from "primeng/tooltip";
 import {PhoneFormatPipe} from "../../config/pipes/phone.format.pipe";
-import {MessageService} from "primeng/api";
+import {ConfirmationService, MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
 import {InputNumberModule} from "primeng/inputnumber";
 import {PostalCodeService} from "../../service/postal-code.service";
 import {SpinnerComponent} from "../../config/components/spinner/spinner.component";
 import {Address} from "../../model/address";
 import {CustomerService} from "../../service/customer.service";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {TagModule} from "primeng/tag";
 
 @Component({
     templateUrl: './customer.component.html',
@@ -47,9 +49,12 @@ import {CustomerService} from "../../service/customer.service";
         ToastModule,
         NgStyle,
         InputNumberModule,
-        SpinnerComponent
+        SpinnerComponent,
+        ConfirmDialogModule,
+        TagModule,
+        NgClass
     ],
-    providers: [MessageService],
+    providers: [MessageService, ConfirmationService],
     standalone: true
 })
 export class CustomerComponent implements OnInit {
@@ -64,6 +69,7 @@ export class CustomerComponent implements OnInit {
     constructor(
         private customerService: CustomerService,
         private postalCodeService: PostalCodeService,
+        private confirmationService: ConfirmationService,
         private cdr: ChangeDetectorRef,
         private messageService: MessageService,
         public layoutService: LayoutService
@@ -86,12 +92,12 @@ export class CustomerComponent implements OnInit {
                 this.customers = data;
             },
             error: (error: any) => {
+                this.spinner = false;
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
                     detail: `Erro ao carregar clientes: '${error}'`
                 });
-                this.spinner = false;
             }
         });
     }
@@ -105,25 +111,39 @@ export class CustomerComponent implements OnInit {
         this.customerDialog = true;
     }
 
+    confirmDeleteCustomer(customer: Customer) {
+        this.confirmationService.confirm({
+            message: 'Tem certeza que deseja deletar o cliente?',
+            header: 'Confirmação',
+            acceptLabel: 'Sim', acceptButtonStyleClass: 'p-button-secondary',
+            rejectLabel: 'Não', rejectButtonStyleClass: 'p-button-danger',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                this.deleteCustomer(customer);
+            },
+            reject: () => {}
+        });
+    }
+
     deleteCustomer(customer: Customer) {
         this.spinner = true;
         this.customerService.delete(customer.id).subscribe({
             next: () => {
+                this.spinner = false;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Sucesso',
                     detail: 'Cliente deletado com sucesso.'
                 });
-                this.spinner = false;
                 this.refresh();
             },
             error: (error: any) => {
+                this.spinner = false;
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
                     detail: error
                 });
-                this.spinner = false;
             }
         });
     }
@@ -132,13 +152,13 @@ export class CustomerComponent implements OnInit {
         this.spinner = true;
         this.customerService.create(this.customer).subscribe({
             next: () => {
+                this.spinner = false;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Sucesso',
                     detail: 'Cliente adicionado com sucesso!'
                 });
                 this.customer = new Customer();
-                this.spinner = false;
                 this.customerDialog = false;
                 this.refresh();
             },
@@ -158,23 +178,23 @@ export class CustomerComponent implements OnInit {
     updateCustomer() {
         this.customerService.update(this.customer).subscribe({
             next: () => {
+                this.spinner = false;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Sucesso',
                     detail: 'Cliente atualizado com sucesso.'
                 });
                 this.customer = new Customer();
-                this.spinner = false;
                 this.customerDialog = false;
                 this.refresh();
             },
             error: (error: any) => {
+                this.spinner = false;
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
                     detail: error
                 })
-                this.spinner = false;
             }
         });
     }
@@ -199,15 +219,15 @@ export class CustomerComponent implements OnInit {
         this.customer.cpfCnpj = inputValue;
     }
 
-    formatCpfCnpj() {
-        if (this.customer.cpfCnpj.length === 11) {
-            this.customer.cpfCnpj = this.customer.cpfCnpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
-        } else if (this.customer.cpfCnpj.length === 14) {
-            this.customer.cpfCnpj = this.customer.cpfCnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+    formatCpfCnpj(cpfCnpj: string) {
+        if (cpfCnpj.length === 11) {
+            cpfCnpj = cpfCnpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+        } else if (cpfCnpj.length === 14) {
+            cpfCnpj = cpfCnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
         } else {
-            this.customer.cpfCnpj = '';
+            cpfCnpj = '';
         }
-        this.cdr.detectChanges();
+        return cpfCnpj;
     }
 
     searchPostalCode() {
@@ -237,7 +257,7 @@ export class CustomerComponent implements OnInit {
                     }
                     this.spinner = false;
                 },
-                error(error: any) {
+                error() {
                     this.spinner = false;
                 }
             });

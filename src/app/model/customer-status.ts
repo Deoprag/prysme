@@ -21,7 +21,6 @@ export namespace CustomerStatus {
             { label: 'Fechamento', value: CustomerStatus.CLOSURE },
             { label: 'Finalizado', value: CustomerStatus.FINALIZED },
             { label: 'Perdido', value: CustomerStatus.LOST },
-            { label: 'Deletado', value: CustomerStatus.DELETED }
         ];
     }
 }
