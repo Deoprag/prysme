@@ -22,10 +22,11 @@ import {ToastModule} from "primeng/toast";
 import {InputNumberModule} from "primeng/inputnumber";
 import {PostalCodeService} from "../../service/postal-code.service";
 import {SpinnerComponent} from "../../config/components/spinner/spinner.component";
-import {Address} from "../../model/address";
 import {CustomerService} from "../../service/customer.service";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {TagModule} from "primeng/tag";
+import {MessagesModule} from "primeng/messages";
+import {InputGroupAddonModule} from "primeng/inputgroupaddon";
 
 @Component({
     templateUrl: './customer.component.html',
@@ -52,7 +53,9 @@ import {TagModule} from "primeng/tag";
         SpinnerComponent,
         ConfirmDialogModule,
         TagModule,
-        NgClass
+        NgClass,
+        MessagesModule,
+        InputGroupAddonModule
     ],
     providers: [MessageService, ConfirmationService],
     standalone: true
@@ -61,7 +64,6 @@ export class CustomerComponent implements OnInit {
     subscription!: Subscription;
     customerDialog: boolean = false;
     spinner: boolean = false;
-    customerStatusOptions = CustomerStatus.getOptions();
 
     customers: Customer[];
     customer: Customer = new Customer();
@@ -96,7 +98,7 @@ export class CustomerComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: `Erro ao carregar clientes: '${error}'`
+                    detail: `Erro ao carregar clientes: '${error.error}'`
                 });
             }
         });

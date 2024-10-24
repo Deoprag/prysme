@@ -1,0 +1,31 @@
+<p-toast/>
+<p-confirmDialog/>
+<spinner [show]="spinner"></spinner>
+<div class="card flex flex-wrap gap-3 justify-content-center">
+    <div>
+        <div class="text-4xl">Carteira de Clientes</div>
+    </div>
+    <div class="card border-3 flex flex-wrap gap-3 justify-content-center">
+        <div
+            *ngFor="let status of [CustomerStatus.NEW, CustomerStatus.CONTACT, CustomerStatus.PRESENTATION, CustomerStatus.PROPOSAL, CustomerStatus.NEGOTIATION, CustomerStatus.CLOSURE]"
+            class="p-2 border-1 surface-border border-round w-15rem h-40rem overflow-hidden"
+            pDroppable (onDrop)="drop(status)">
+            <p class="text-center flex justify-content-between border-primary border-bottom-3 p-3 text-md bg-black-alpha-10 border-round">
+                {{ status }}
+                <p-tag
+                       severity="secondary"
+                       value="{{ getCustomersByStatus(status)?.length }}"/>
+            </p>
+            <ul class="list-none flex flex-column gap-2 p-0 m-0 overflow-auto">
+                <li *ngFor="let customer of getCustomersByStatus(status)"
+                    class="cursor-pointer border-round surface-border border-1 h-8rem p-2 transition-colors hover:bg-black-alpha-10 transition-duration-200"
+                    pDraggable
+                    (onDragStart)="dragStart(customer)"
+                    (onDragEnd)="dragEnd()">
+                    <i class="pi pi-user m-2 text-2xl"></i>
+                    {{ customer.name }}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
