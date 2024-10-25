@@ -13,7 +13,7 @@ import {LayoutService} from "../../../service/app.layout.service";
 import {TagModule} from "primeng/tag";
 
 @Component({
-    selector: 'sales-funnel',
+    selector: 'wallet',
     standalone: true,
     imports: [
         ConfirmDialogModule,
@@ -24,10 +24,10 @@ import {TagModule} from "primeng/tag";
         TagModule
     ],
     providers: [MessageService, ConfirmationService],
-    templateUrl: './sales-funnel.component.html',
-    styleUrl: './sales-funnel.component.scss'
+    templateUrl: './wallet.component.html',
+    styleUrl: './wallet.component.scss'
 })
-export class SalesFunnelComponent implements OnInit {
+export class WalletComponent implements OnInit {
     protected readonly CustomerStatus = CustomerStatus;
     subscription!: Subscription;
     spinner: boolean = false;
@@ -72,11 +72,30 @@ export class SalesFunnelComponent implements OnInit {
         return this.customers.filter(customer => customer.customerStatus === status);
     }
 
-    dragStart(customer: any) {
+    dragStart(customer: Customer) {
         this.draggedCustomer = customer;
     }
 
     dragEnd() {
+        this.spinner = true;
+        this.customerService.update(this.draggedCustomer).subscribe({
+            next: () => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Atualizado',
+                    detail: 'Cliente requalificado com sucesso!'
+                });
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: `Erro ao carregar clientes: '${error.error}'`
+                });
+            },
+        });
         this.draggedCustomer = null;
     }
 

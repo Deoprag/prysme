@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CustomerComponent } from './customer.component';
-import {SalesFunnelComponent} from "./sales-funnel/sales-funnel.component";
+import {WalletComponent} from "./wallet/wallet.component";
 
 @NgModule({
     imports: [RouterModule.forChild([
         { path: 'customer', component: CustomerComponent },
-        { path: 'customer/salesFunnel', component: SalesFunnelComponent }
+        { path: 'customer/wallet', component: WalletComponent }
     ])],
     exports: [RouterModule]
 })

@@ -1,0 +1,34 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+<spinner [show]="spinner"></spinner>
+<div class="flex flex-column gap-3 justify-content-around surface-card p-3 border-none border-round-xl shadow-3">
+    <div>
+        <div class="text-4xl text-center">Carteira de Clientes</div>
+    </div>
+    <div class="flex flex-row justify-content-between gap-3" style="height: 49rem;">
+        <div
+            *ngFor="let status of [CustomerStatus.NEW, CustomerStatus.CONTACT, CustomerStatus.PRESENTATION, CustomerStatus.PROPOSAL, CustomerStatus.NEGOTIATION, CustomerStatus.CLOSURE]"
+            class="border-2 surface-border border-round w-20rem overflow-auto"
+            pDroppable (onDrop)="drop(status)">
+            <p class="text-center flex justify-content-between border-primary border-bottom-3 p-3 text-md surface-ground border-round sticky top-0">
+                {{ status }}
+                <p-tag severity="secondary" value="{{ getCustomersByStatus(status)?.length }}"></p-tag>
+            </p>
+            <ul class="flex flex-column gap-2 p-0 m-0" style="max-height: 36rem;">
+                <li *ngFor="let customer of getCustomersByStatus(status)"
+                    class="cursor-pointer text-wrap border-round surface-border mx-2 border-1 p-2 transition-colors surface-ground hover:bg-black-alpha-10 transition-duration-200"
+                    pDraggable
+                    (onDragStart)="dragStart(customer)"
+                    (onDragEnd)="dragEnd()"
+                    style="min-height: 8rem">
+                    @if (customer.cpfCnpj.length === 11) {
+                        <i class="pi pi-user m-2 text-xl"></i>
+                    } @else {
+                        <i class="pi pi-building m-2 text-xl"></i>
+                    }
+                    <span class="text-overflow-ellipsis w-full">{{ customer.name }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
