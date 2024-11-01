@@ -12,7 +12,7 @@ platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));
 
 (function() {
-    const theme = localStorage.getItem('app-theme') || 'bootstrap4-light-blue';
+    const theme = localStorage.getItem('app-theme') || 'light';
     const colorScheme = localStorage.getItem('app-color-scheme') || 'light';
     const linkElement = document.getElementById('theme-css');
     const newHref = `assets/layout/styles/theme/${theme}/theme.css`;

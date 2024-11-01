@@ -77,7 +77,7 @@ export class WalletComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: `Erro ao carregar clientes: '${error.error}'`
+                    detail: `Erro ao carregar clientes: '${error.error.message}'`
                 });
             }
         });
@@ -110,7 +110,7 @@ export class WalletComponent implements OnInit {
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Erro',
-                        detail: `Erro ao carregar clientes: '${error.error}'`
+                        detail: `Erro ao carregar clientes: '${error.error.message}'`
                     });
                 },
             });
