@@ -1,7 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Customer} from "../../model/customer";
-import {CustomerStatus} from "../../model/customer-status";
 import {LayoutService} from "../../service/app.layout.service";
 import {debounceTime, Subscription} from "rxjs";
 import {TableModule} from "primeng/table";
@@ -98,7 +97,7 @@ export class CustomerComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: `Erro ao carregar clientes: '${error.error}'`
+                    detail: `Erro ao carregar clientes: '${error.error.message}'`
                 });
             }
         });
@@ -109,7 +108,7 @@ export class CustomerComponent implements OnInit {
     }
 
     editCustomer(customer: Customer) {
-        this.customer = customer;
+        this.customer = {...customer};
         this.customerDialog = true;
     }
 
@@ -144,7 +143,7 @@ export class CustomerComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: error
+                    detail: error.error.message
                 });
             }
         });
@@ -195,7 +194,7 @@ export class CustomerComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: error
+                    detail: error.error.message
                 })
             }
         });

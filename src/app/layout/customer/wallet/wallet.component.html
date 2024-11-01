@@ -1,9 +1,8 @@
 <p-toast></p-toast>
-<p-confirmDialog></p-confirmDialog>
 <spinner [show]="spinner"></spinner>
 <div class="flex flex-column gap-3 justify-content-around surface-card p-3 border-none border-round-xl shadow-3">
     <div>
-        <div class="text-4xl text-center">Carteira de Clientes</div>
+        <div class="text-4xl text-center font-semibold">Carteira de Clientes</div>
     </div>
     <div class="flex flex-row justify-content-between gap-3" style="height: 49rem;">
         <div
@@ -14,13 +13,13 @@
                 {{ status }}
                 <p-tag severity="secondary" value="{{ getCustomersByStatus(status)?.length }}"></p-tag>
             </p>
-            <ul class="flex flex-column gap-2 p-0 m-0" style="max-height: 36rem;">
+            <ul class="flex flex-column gap-3 p-0 m-0" style="max-height: 36rem;">
                 <li *ngFor="let customer of getCustomersByStatus(status)"
                     class="cursor-pointer text-wrap border-round surface-border mx-2 border-1 p-2 transition-colors surface-ground hover:bg-black-alpha-10 transition-duration-200"
                     pDraggable
                     (onDragStart)="dragStart(customer)"
                     (onDragEnd)="dragEnd()"
-                    style="min-height: 8rem">
+                    style="min-height: 10rem">
                     @if (customer.cpfCnpj.length === 11) {
                         <i class="pi pi-user m-2 text-xl"></i>
                     } @else {
@@ -32,3 +31,21 @@
         </div>
     </div>
 </div>
+
+<p-dialog header="Novo Contato"
+          [(visible)]="showContactDialog"
+          [modal]="true"
+          [style]="{width: '30vw'}"
+          [breakpoints]="{ '1379px': '45vw', '767px': '60vw' }"
+          [draggable]="false">
+    <div class="grid p-fluid p-2">
+        <div class="col-12 md:col-6">
+            <label for="newContactCustomer">Cliente</label>
+            <input id="newContactCustomer" type="text" pInputText disabled [(ngModel)]="selectedCustomer.name"/>
+        </div>
+        <div class="col-12 md:col-6">
+            <label for="name">Cliente</label>
+            <input id="name" type="text" pInputText readonly [(ngModel)]="selectedCustomer.name"/>
+        </div>
+    </div>
+</p-dialog>

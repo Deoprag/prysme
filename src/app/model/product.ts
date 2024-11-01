@@ -6,7 +6,7 @@ export class Product {
     stock: number;
     categoryId: number;
     categoryName: string;
-    active: boolean;
+    active: boolean = true;
     createdDate: Date;
     lastModifiedDate: Date;
 }

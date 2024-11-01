@@ -24,14 +24,15 @@ export class AppMenuComponent implements OnInit {
             {
                 label: 'Clientes',
                 items: [
-                    { label: 'Lista', icon: 'pi pi-fw pi-book', routerLink: ['/customer'] },
-                    { label: 'Carteira', icon: 'pi pi-fw pi-wallet', routerLink: ['/customer/wallet'] },
+                    { label: 'Lista', icon: 'pi pi-fw pi-users', routerLink: ['/customers'] },
+                    { label: 'Carteira', icon: 'pi pi-fw pi-wallet', routerLink: ['/customers/wallet'] },
                 ]
             },
             {
-                label: 'Prime Blocks',
+                label: 'Produtos',
                 items: [
-                    { label: 'Free Blocks', icon: 'pi pi-fw pi-eye', routerLink: ['/blocks'], badge: 'NEW' },
+                    { label: 'Lista', icon: 'pi pi-fw pi-box', routerLink: ['/products'] },
+                    { label: 'Categorias', icon: 'pi pi-fw pi-tags', routerLink: ['/products/categories'] },
                 ]
             },
             {

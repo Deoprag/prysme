@@ -1,0 +1,72 @@
+<p-toast/>
+<p-confirmDialog/>
+<spinner [show]="spinner"></spinner>
+<div class="surface-card p-3 border-none border-round-xl shadow-3">
+    <p-table [value]="productCategories"
+             [paginator]="true"
+             [scrollable]="true"
+             [rows]="10">
+        <ng-template pTemplate="caption">
+            <div class="p-mt-4 flex justify-content-between gap-2">
+                <div class="p-2 flex gap-2">
+                    <button pButton icon="pi pi-print" class="p-button-help p-mr-2"
+                            (click)="true"></button>
+                </div>
+                <div class="text-4xl">Categorias de Produto</div>
+                <div class="p-2 flex gap-2">
+                    <button pButton icon="pi pi-plus" class="p-button-success p-mr-2"
+                            (click)="productCategoryDialog = true"></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2rem"></th>
+                <th class="font-semibold">Nome</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-productCategory>
+            <tr>
+                <td class="w-2rem">
+                    <div class="flex gap-2">
+                        <button class="p p-button-info p-button-raised" pButton icon="pi pi-pencil"
+                                (click)="editProductCategory(productCategory)"></button>
+                        <button class="p p-button-danger p-button-raised" pButton icon="pi pi-trash"
+                                (click)="confirmDeleteProductCategory(productCategory)"></button>
+                    </div>
+                </td>
+                <td>{{ productCategory.name }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<form #productCategoryForm="ngForm" name="productForm">
+    <p-dialog header="Nova Categoria de Produto"
+              [(visible)]="productCategoryDialog"
+              [modal]="true"
+              [style]="{width: '55vw'}"
+              [breakpoints]="{ '1379px': '75vw', '767px': '90vw' }"
+              [maximizable]="true"
+              [draggable]="false">
+        <div class="grid p-fluid p-2">
+            <div class="col-12">
+                <div class="p-field">
+                    <label for="name">Nome</label>
+                    <input pInputText
+                           name="Nome"
+                           id="name"
+                           [(ngModel)]="productCategory.name"
+                           required
+                           placeholder="Digite o nome da categoria de produto."/>
+                </div>
+            </div>
+        </div>
+        <p-footer>
+            <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                    (click)="productCategoryDialog = false"></button>
+            <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
+                    (click)="saveProductCategory()"
+                    [disabled]="productCategoryForm.invalid"></button>
+        </p-footer>
+    </p-dialog>
+</form>
