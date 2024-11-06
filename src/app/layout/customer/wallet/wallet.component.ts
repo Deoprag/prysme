@@ -17,6 +17,7 @@ import {DropdownModule} from "primeng/dropdown";
 import {DialogModule} from "primeng/dialog";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {Contact} from "../../../model/contact";
+import {BadgeModule} from "primeng/badge";
 
 @Component({
     selector: 'wallet',
@@ -32,7 +33,8 @@ import {Contact} from "../../../model/contact";
         FormsModule,
         DropdownModule,
         DialogModule,
-        InputTextareaModule
+        InputTextareaModule,
+        BadgeModule
     ],
     providers: [MessageService, ConfirmationService],
     templateUrl: './wallet.component.html',

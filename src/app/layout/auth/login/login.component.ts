@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { LayoutService } from 'src/app/service/app.layout.service';
+import {AuthService} from "../../../auth/auth.service";
+import {Router} from "@angular/router";
+import {MessageService} from "primeng/api";
 
 @Component({
     selector: 'app-login',
@@ -11,13 +14,45 @@ import { LayoutService } from 'src/app/service/app.layout.service';
             margin-right: 1rem;
             color: var(--primary-color) !important;
         }
-    `]
+    `],
+    providers: [MessageService]
 })
 export class LoginComponent {
 
     valCheck: string[] = ['remember'];
+    spinner: boolean = false;
+    username: string = '';
+    password: string = '';
 
-    password!: string;
+    constructor(
+        public messageService: MessageService,
+        public layoutService: LayoutService,
+        public authService: AuthService,
+        private router: Router
+    ) {}
 
-    constructor(public layoutService: LayoutService) { }
+    login() {
+        this.spinner = true;
+        this.authService.login(this.username, this.password).subscribe({
+            next: (token: any) => {
+                this.spinner = false;
+                localStorage.setItem('accessToken', token.accessToken);
+                localStorage.setItem('refreshToken', token.refreshToken);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Login',
+                    detail: 'Logado com sucesso!'
+                })
+                this.router.navigate(['/']);
+            },
+            error: (err) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: err,
+                })
+            }
+        });
+    }
 }

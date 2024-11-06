@@ -12,4 +12,6 @@ export class Quotation {
     items: ItemProduct[] = [];
     createdDate: Date;
     lastModifiedDate: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

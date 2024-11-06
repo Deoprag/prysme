@@ -9,4 +9,6 @@ export class Product {
     active: boolean = true;
     createdDate: Date;
     lastModifiedDate: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

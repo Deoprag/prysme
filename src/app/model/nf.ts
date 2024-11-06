@@ -21,4 +21,6 @@ export class NF {
     observations: string;
     createdDate: Date;
     lastModifiedDate: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

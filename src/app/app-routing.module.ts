@@ -2,7 +2,7 @@ import {RouterModule} from '@angular/router';
 import {NgModule} from '@angular/core';
 import {NotfoundComponent} from './layout/notfound/notfound.component';
 import {AppLayoutComponent} from "./layout/default-menu/app.layout.component";
-import {authGuard} from './guards/auth.guard';
+import {authGuard} from './auth/auth.guard';
 
 @NgModule({
     imports: [
@@ -12,21 +12,25 @@ import {authGuard} from './guards/auth.guard';
                 children: [
                     {
                         path: '',
-                        loadChildren: () => import('./layout/dashboard/dashboard.module').then(m => m.DashboardModule)
+                        loadChildren: () => import('./layout/dashboard/dashboard.module').then(m => m.DashboardModule),
+                        canActivate: [authGuard]
                     },
                     {
                         path: '',
-                        loadChildren: () => import('./layout/customer/customer-routing.module').then(m => m.CustomersRoutingModule)
+                        loadChildren: () => import('./layout/customer/customer-routing.module').then(m => m.CustomersRoutingModule),
+                        canActivate: [authGuard]
                     },
                     {
                         path: '',
-                        loadChildren: () => import('./layout/product/product-routing.module').then(m => m.ProductsRoutingModule)
+                        loadChildren: () => import('./layout/product/product-routing.module').then(m => m.ProductsRoutingModule),
+                        canActivate: [authGuard]
                     },
                 ]
             },
             {path: 'auth', loadChildren: () => import('./layout/auth/auth.module').then(m => m.AuthModule)},
             {path: 'landing', loadChildren: () => import('./layout/landing/landing.module').then(m => m.LandingModule)},
             {path: 'notfound', component: NotfoundComponent},
+            {path: '', redirectTo: 'auth/login', pathMatch: 'full'},
             {path: '**', redirectTo: '/notfound'},
         ], {scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload'})
     ],

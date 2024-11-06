@@ -13,4 +13,6 @@ export class Contact {
     contactDate!: Date;
     createdDate!: Date;
     lastModifiedDate!: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

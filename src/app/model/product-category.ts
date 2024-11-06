@@ -3,4 +3,6 @@ export class ProductCategory {
     name: string;
     createdDate: Date;
     lastModifiedDate: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

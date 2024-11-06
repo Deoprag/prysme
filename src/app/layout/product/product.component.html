@@ -24,6 +24,7 @@
                 <th></th>
                 <th class="font-semibold">Nome</th>
                 <th class="font-semibold">Categoria</th>
+                <th class="font-semibold text-center">Alterado Por</th>
                 <th class="font-semibold">Data Atualização</th>
                 <th class="font-semibold text-center">Status</th>
             </tr>
@@ -40,6 +41,10 @@
                 </td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.categoryName }}</td>
+                <td class="text-center"><p-tag
+                    severity="warning"
+                    value="{{ product.lastModifiedBy }}"/>
+                </td>
                 <td>{{ product.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
                 <td class="text-center" [ngClass]="{
                       'text-green-300 font-semibold': product.active,

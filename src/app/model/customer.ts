@@ -14,4 +14,6 @@ export class Customer {
     address: Address = new Address();
     createdDate: Date;
     lastModifiedDate: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

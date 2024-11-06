@@ -5,4 +5,6 @@ export class Task {
     completedDateTime: Date;
     createdDate: Date;
     lastModifiedDate: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

@@ -23,6 +23,8 @@
             <tr>
                 <th class="w-2rem"></th>
                 <th class="font-semibold">Nome</th>
+                <th class="font-semibold text-center">Alterado Por</th>
+                <th class="font-semibold">Data Atualização</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-productCategory>
@@ -36,6 +38,11 @@
                     </div>
                 </td>
                 <td>{{ productCategory.name }}</td>
+                <td class="text-center"><p-tag
+                    severity="warning"
+                    value="{{ productCategory.lastModifiedBy }}"/>
+                </td>
+                <td>{{ productCategory.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
             </tr>
         </ng-template>
     </p-table>

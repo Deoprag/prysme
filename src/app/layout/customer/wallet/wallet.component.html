@@ -11,7 +11,7 @@
             pDroppable (onDrop)="drop(status)">
             <p class="text-center flex justify-content-between border-primary border-bottom-3 p-3 text-md surface-ground border-round sticky top-0">
                 {{ status }}
-                <p-tag severity="secondary" value="{{ getCustomersByStatus(status)?.length }}"></p-tag>
+                <p-badge [value]="getCustomersByStatus(status)?.length" />
             </p>
             <ul class="flex flex-column gap-3 p-0 m-0" style="max-height: 36rem;">
                 <li *ngFor="let customer of getCustomersByStatus(status)"

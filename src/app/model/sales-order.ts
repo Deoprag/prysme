@@ -14,4 +14,6 @@ export class SalesOrder {
     items: ItemProduct[] = [];
     createdDate: Date;
     lastModifiedDate: Date;
+    createdBy!: string;
+    lastModifiedBy!: string;
 }

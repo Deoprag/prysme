@@ -6,13 +6,16 @@ import { AppLayoutModule } from './layout/default-menu/app.layout.module';
 import { NotfoundComponent } from './layout/notfound/notfound.component';
 import { ProductService } from './service/product.service';
 import { CustomerService } from './service/customer.service';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {AuthInterceptor} from "./auth/auth.interceptor";
 
 @NgModule({
     declarations: [AppComponent, NotfoundComponent],
     imports: [AppRoutingModule, AppLayoutModule],
     providers: [
         { provide: LocationStrategy, useClass: PathLocationStrategy },
-        CustomerService, ProductService
+        CustomerService, ProductService,
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
     ],
     bootstrap: [AppComponent],
 })
