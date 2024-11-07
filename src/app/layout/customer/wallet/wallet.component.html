@@ -11,7 +11,7 @@
             pDroppable (onDrop)="drop(status)">
             <p class="text-center flex justify-content-between border-primary border-bottom-3 p-3 text-md surface-ground border-round sticky top-0">
                 {{ status }}
-                <p-badge [value]="getCustomersByStatus(status)?.length" />
+                <p-badge [value]="getCustomersByStatus(status)?.length"/>
             </p>
             <ul class="flex flex-column gap-3 p-0 m-0" style="max-height: 36rem;">
                 <li *ngFor="let customer of getCustomersByStatus(status)"
@@ -32,20 +32,62 @@
     </div>
 </div>
 
-<p-dialog header="Novo Contato"
-          [(visible)]="showContactDialog"
+<p-dialog header="Registrar Contato"
+          [(visible)]="contactDialog"
           [modal]="true"
-          [style]="{width: '30vw'}"
-          [breakpoints]="{ '1379px': '45vw', '767px': '60vw' }"
-          [draggable]="false">
+          [style]="{width: '40vw'}"
+          [breakpoints]="{ '1379px': '50vw', '767px': '60vw' }"
+          [draggable]="false"
+          (onHide)="closeDialog(CustomerStatus.CONTACT)">
     <div class="grid p-fluid p-2">
-        <div class="col-12 md:col-6">
-            <label for="newContactCustomer">Cliente</label>
-            <input id="newContactCustomer" type="text" pInputText disabled [(ngModel)]="selectedCustomer.name"/>
+        <div class="col-12">
+            <div class="p-field">
+                <label for="newContactCustomer">Cliente</label>
+                <input id="newContactCustomer" type="text" pInputText [(ngModel)]="selectedCustomer.name" disabled/>
+            </div>
         </div>
-        <div class="col-12 md:col-6">
-            <label for="name">Cliente</label>
-            <input id="name" type="text" pInputText readonly [(ngModel)]="selectedCustomer.name"/>
+
+        <div class="col-12 lg:col-6">
+            <div class="p-field">
+                <label for="category">Tipo de Contato</label>
+                <p-dropdown
+                    id="category"
+                    name="Categoria"
+                    [appendTo]="'body'"
+                    [options]="contactTypes"
+                    (onChange)="contact.info.contactType = $event.value.value"
+                    optionLabel="label"
+                    placeholder="Selecione uma categoria"/>
+            </div>
+        </div>
+
+        <div class="col-12 lg:col-6">
+            <div class="p-field">
+                <label for="contactAddress">Endereço de Contato</label>
+                <input id="contactAddress" type="text" pInputText [(ngModel)]="contact.info.value"/>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="p-field">
+                <label for="notes">Observações</label>
+                <textarea pInputTextarea
+                          name="Descrição"
+                          id="notes"
+                          [(ngModel)]="contact.notes"
+                          [autoResize]="true"
+                          class="overflow-auto"
+                          style="min-height: 150px; max-height: 150px"
+                          required
+                          placeholder="Digite a observação do contato.">
+                    </textarea>
+            </div>
         </div>
     </div>
+    <p-footer>
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                (click)="closeDialog(CustomerStatus.CONTACT)"></button>
+        <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
+                (click)="saveContact()"></button> <!-- [disabled]="customerForm.invalid" -->
+    </p-footer>
 </p-dialog>

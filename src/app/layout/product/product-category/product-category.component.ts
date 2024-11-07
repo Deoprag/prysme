@@ -92,7 +92,6 @@ export class ProductCategoryComponent implements OnInit {
         });
     }
 
-
     editProductCategory(productCategory: ProductCategory) {
         this.productCategory = productCategory;
         this.productCategoryDialog = true;

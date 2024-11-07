@@ -1,12 +1,13 @@
 import {ContactInfo} from "./contact-info";
-import {User} from "./user";
 import {Customer} from "./customer";
 import {CustomerStatus} from "./customer-status";
 
 export class Contact {
     id!: number;
-    seller!: User;
-    customer!: Customer;
+    sellerId: number;
+    seller: string;
+    customerId: number;
+    customer: string;
     info: ContactInfo = new ContactInfo();
     customerStatus!: CustomerStatus;
     notes!: string;

@@ -18,6 +18,9 @@ import {DialogModule} from "primeng/dialog";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {Contact} from "../../../model/contact";
 import {BadgeModule} from "primeng/badge";
+import {ContactType} from "../../../model/contact-type";
+import {AuthService} from "../../../auth/auth.service";
+import {ContactService} from "../../../service/contact.service";
 
 @Component({
     selector: 'wallet',
@@ -44,17 +47,21 @@ export class WalletComponent implements OnInit {
     protected readonly CustomerStatus = CustomerStatus;
     subscription!: Subscription;
     spinner: boolean = false;
-    showContactDialog: boolean = false;
+    contactDialog: boolean = false;
 
     customers: Customer[] = [];
+    contactTypes: any = ContactType.getOptions();
     draggedCustomer: Customer;
     selectedCustomer: Customer = new Customer();
+    customerStatus: CustomerStatus;
     draggedCustomerStatus: CustomerStatus;
     contact: Contact = new Contact();
 
     constructor(
         private customerService: CustomerService,
         private messageService: MessageService,
+        private authService: AuthService,
+        private contactService: ContactService,
         public layoutService: LayoutService
     ) {
         this.subscription = this.layoutService.configUpdate$
@@ -91,13 +98,13 @@ export class WalletComponent implements OnInit {
 
     dragStart(customer: Customer) {
         this.draggedCustomer = customer;
+        this.selectedCustomer = customer;
         this.draggedCustomerStatus = customer.customerStatus;
     }
 
     dragEnd() {
         if (this.draggedCustomer && this.draggedCustomer.customerStatus !== this.draggedCustomerStatus) {
             this.spinner = true;
-            this.selectedCustomer = this.draggedCustomer
             this.customerService.update(this.draggedCustomer).subscribe({
                 next: () => {
                     this.spinner = false;
@@ -112,7 +119,7 @@ export class WalletComponent implements OnInit {
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Erro',
-                        detail: `Erro ao carregar clientes: '${error.error.message}'`
+                        detail: `Erro ao requalificar cliente: '${error.error.message}'`
                     });
                 },
             });
@@ -122,11 +129,12 @@ export class WalletComponent implements OnInit {
     }
 
     drop(newStatus: CustomerStatus) {
+        this.customerStatus = this.draggedCustomer.customerStatus;
         if (this.draggedCustomer && this.draggedCustomer.customerStatus !== newStatus) {
             switch (newStatus) {
                 case CustomerStatus.CONTACT:
                         this.draggedCustomer.customerStatus = newStatus;
-                        this.showContactDialog = true;
+                        this.contactDialog = true;
                     return;
 
                 case CustomerStatus.PRESENTATION:
@@ -150,7 +158,55 @@ export class WalletComponent implements OnInit {
         }
     }
 
-    saveContactInfo() {
-        this.showContactDialog = false;
+    saveContact() {
+        this.spinner = true;
+
+        this.contact.sellerId = this.authService.user.id;
+        this.contact.customerId = this.draggedCustomer.id;
+        this.contact.customerStatus = CustomerStatus.CONTACT;
+        this.contact.contactDate = new Date();
+
+        this.contactService.create(this.contact).subscribe({
+            next: (data: any) => {
+                this.spinner = false;
+                this.contactDialog = false;
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Atualizado',
+                    detail: 'Cliente requalificado com sucesso!'
+                });
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: `Erro ao requalificar cliente: '${error.error.message}'`
+                });
+            }
+        })
     }
+
+    closeDialog(dialog: string) {
+        this.draggedCustomer.customerStatus = this.customerStatus;
+        switch (dialog) {
+            case CustomerStatus.CONTACT:
+                this.contactDialog = false;
+                return;
+
+            case CustomerStatus.PRESENTATION:
+                // this.showPresentationDialog = true;
+                return;
+
+            case CustomerStatus.PROPOSAL:
+                // this.showProposalDialog = true;
+                return;
+
+            case CustomerStatus.NEGOTIATION:
+                // this.showNegotiationDialog = true;
+                return;
+        }
+    }
+
+    protected readonly ContactType = ContactType;
 }

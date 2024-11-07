@@ -5,5 +5,4 @@ export class ContactInfo {
     contactType: ContactType = ContactType.PHONE;
     value: string;
     contactName: string;
-    contactId: number;
 }

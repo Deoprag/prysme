@@ -34,10 +34,11 @@ export class LoginComponent {
     login() {
         this.spinner = true;
         this.authService.login(this.username, this.password).subscribe({
-            next: (token: any) => {
+            next: (response: any) => {
                 this.spinner = false;
-                localStorage.setItem('accessToken', token.accessToken);
-                localStorage.setItem('refreshToken', token.refreshToken);
+                this.authService.user = response.user;
+                localStorage.setItem('accessToken', response.token.accessToken);
+                localStorage.setItem('refreshToken', response.token.refreshToken);
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Login',

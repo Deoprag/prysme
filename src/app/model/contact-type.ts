@@ -5,7 +5,7 @@ export enum ContactType {
     WHATSAPP = 'WHATSAPP',
 }
 
-export namespace CustomerStatus {
+export namespace ContactType {
     export function getOptions() {
         return [
             { label: 'Presencialmente', value: 'IN_PERSON' },
