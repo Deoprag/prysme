@@ -76,6 +76,8 @@ export class WalletComponent implements OnInit {
 
     refresh() {
         this.spinner = true;
+
+        this.contact = new Contact();
         this.customerService.findAll().subscribe({
             next: (data: any) => {
                 this.spinner = false;
@@ -103,65 +105,64 @@ export class WalletComponent implements OnInit {
     }
 
     dragEnd() {
-        if (this.draggedCustomer && this.draggedCustomer.customerStatus !== this.draggedCustomerStatus) {
-            this.spinner = true;
-            this.customerService.update(this.draggedCustomer).subscribe({
-                next: () => {
-                    this.spinner = false;
-                    this.messageService.add({
-                        severity: 'info',
-                        summary: 'Atualizado',
-                        detail: 'Cliente requalificado com sucesso!'
-                    });
-                },
-                error: (error: any) => {
-                    this.spinner = false;
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Erro',
-                        detail: `Erro ao requalificar cliente: '${error.error.message}'`
-                    });
-                },
-            });
-        }
-        this.draggedCustomer = null;
-        this.draggedCustomerStatus = null;
+
     }
 
     drop(newStatus: CustomerStatus) {
         this.customerStatus = this.draggedCustomer.customerStatus;
         if (this.draggedCustomer && this.draggedCustomer.customerStatus !== newStatus) {
+            this.draggedCustomer.customerStatus = newStatus;
             switch (newStatus) {
+                case CustomerStatus.NEW:
+                    this.saveCustomer();
+                    return;
                 case CustomerStatus.CONTACT:
-                        this.draggedCustomer.customerStatus = newStatus;
                         this.contactDialog = true;
                     return;
 
                 case CustomerStatus.PRESENTATION:
-                        this.draggedCustomer.customerStatus = newStatus;
                         // this.showPresentationDialog = true;
                     return;
 
                 case CustomerStatus.PROPOSAL:
-                        this.draggedCustomer.customerStatus = newStatus;
                         // this.showProposalDialog = true;
                     return;
 
                 case CustomerStatus.NEGOTIATION:
-                        this.draggedCustomer.customerStatus = newStatus;
                         // this.showNegotiationDialog = true;
                     return;
             }
-
-            this.draggedCustomer.customerStatus = newStatus;
-            this.dragEnd();
         }
+    }
+
+    saveCustomer() {
+        this.spinner = true;
+
+        this.customerService.update(this.draggedCustomer).subscribe({
+            next: (data: any) => {
+                this.spinner = false;
+                this.refresh();
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Atualizado',
+                    detail: 'Cliente requalificado com sucesso!'
+                });
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: `Erro ao requalificar cliente: '${error.error.message}'`
+                });
+            }
+        })
     }
 
     saveContact() {
         this.spinner = true;
 
-        this.contact.sellerId = this.authService.user.id;
+        this.contact.sellerId = Number.parseInt(localStorage.getItem("userId"));
         this.contact.customerId = this.draggedCustomer.id;
         this.contact.customerStatus = CustomerStatus.CONTACT;
         this.contact.contactDate = new Date();
@@ -170,6 +171,7 @@ export class WalletComponent implements OnInit {
             next: (data: any) => {
                 this.spinner = false;
                 this.contactDialog = false;
+                this.refresh();
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Atualizado',
@@ -207,6 +209,4 @@ export class WalletComponent implements OnInit {
                 return;
         }
     }
-
-    protected readonly ContactType = ContactType;
 }

@@ -1,5 +1,4 @@
 import {ContactInfo} from "./contact-info";
-import {Customer} from "./customer";
 import {CustomerStatus} from "./customer-status";
 
 export class Contact {

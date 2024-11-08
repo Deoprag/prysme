@@ -9,6 +9,7 @@ import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import {RippleModule} from "primeng/ripple";
 import {ToastModule} from "primeng/toast";
+import {SpinnerComponent} from "../../../config/components/spinner/spinner.component";
 
 @NgModule({
     imports: [
@@ -20,7 +21,8 @@ import {ToastModule} from "primeng/toast";
         FormsModule,
         PasswordModule,
         RippleModule,
-        ToastModule
+        ToastModule,
+        SpinnerComponent
     ],
     declarations: [LoginComponent]
 })

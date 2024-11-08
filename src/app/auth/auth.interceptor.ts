@@ -10,10 +10,11 @@ import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import {MessageService} from "primeng/api";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(private authService: AuthService, private router: Router, private messageService: MessageService) {}
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         let authRequest = request;
@@ -30,21 +31,28 @@ export class AuthInterceptor implements HttpInterceptor {
                 if (error.status === 401 && finalToken) {
                     return this.authService.refreshToken().pipe(
                         switchMap((newToken: string) => {
-                            localStorage.setItem('token', newToken);
+                            localStorage.setItem('accessToken', newToken);
                             const newRequest = request.clone({
                                 setHeaders: { Authorization: `Bearer ${newToken}` },
                             });
                             return next.handle(newRequest);
                         }),
-                        catchError(() => {
+                        catchError((error: any) => {
                             this.authService.logout();
-                            this.router.navigate(['/auth/login']);
-                            return throwError(() => new Error('Sessão expirada. Faça login novamente.'));
+                            this.router.navigate(['/auth/login']).catch(() => {
+                                this.messageService.add({
+                                    severity: 'error',
+                                    summary: 'Erro de navegação',
+                                    detail: `Não foi possível redirecionar para a tela de login: ${error}`,
+                                });
+                            });
+                            return throwError(() => error);
                         })
                     );
                 }
-                return throwError(() => new Error(error.message));
+                return throwError(() => error);
             })
         );
     }
+
 }

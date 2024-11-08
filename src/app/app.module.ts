@@ -8,14 +8,15 @@ import { ProductService } from './service/product.service';
 import { CustomerService } from './service/customer.service';
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {AuthInterceptor} from "./auth/auth.interceptor";
+import {MessageService} from "primeng/api";
 
 @NgModule({
     declarations: [AppComponent, NotfoundComponent],
     imports: [AppRoutingModule, AppLayoutModule],
     providers: [
         { provide: LocationStrategy, useClass: PathLocationStrategy },
-        CustomerService, ProductService,
-        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        MessageService, CustomerService, ProductService,
     ],
     bootstrap: [AppComponent],
 })

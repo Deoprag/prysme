@@ -14,8 +14,8 @@ export class AuthService {
         return localStorage.getItem('accessToken');
     }
 
-    login(username: string, password: string): Observable<string> {
-        return this.http.post<string>(`${this.baseUrl}/signIn`, { username, password });
+    login(username: string, password: string): any {
+        return this.http.post<any>(`${this.baseUrl}/signIn`, { username, password });
     }
 
     isAuthenticated(): boolean {
@@ -38,6 +38,5 @@ export class AuthService {
     logout(): void {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
     }
 }

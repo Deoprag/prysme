@@ -36,23 +36,30 @@ export class LoginComponent {
         this.authService.login(this.username, this.password).subscribe({
             next: (response: any) => {
                 this.spinner = false;
-                this.authService.user = response.user;
                 localStorage.setItem('accessToken', response.token.accessToken);
                 localStorage.setItem('refreshToken', response.token.refreshToken);
+                localStorage.setItem('userId', response.userId);
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Login',
                     detail: 'Logado com sucesso!'
                 })
-                this.router.navigate(['/']);
+                this.router.navigate(['/']).catch((error: any) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Erro de navegação',
+                        detail: `Não foi possível redirecionar: ${error}`,
+                    });
+                });
             },
-            error: (err) => {
+            error: (error: any) => {
                 this.spinner = false;
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: err,
-                })
+                    detail: error.error.message
+                });
+                console.log(error);
             }
         });
     }
