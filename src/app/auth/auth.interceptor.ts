@@ -28,17 +28,16 @@ export class AuthInterceptor implements HttpInterceptor {
 
         return next.handle(authRequest).pipe(
             catchError((error: HttpErrorResponse) => {
-                if (error.status === 401 && finalToken) {
+                if (error.status === 403 && finalToken) {
                     return this.authService.refreshToken().pipe(
-                        switchMap((newToken: string) => {
-                            localStorage.setItem('accessToken', newToken);
+                        switchMap((response: any) => {
+                            localStorage.setItem('accessToken', response.token.accessToken);
                             const newRequest = request.clone({
-                                setHeaders: { Authorization: `Bearer ${newToken}` },
+                                setHeaders: { Authorization: `Bearer ${response.token.accessToken}` },
                             });
                             return next.handle(newRequest);
                         }),
                         catchError((error: any) => {
-                            this.authService.logout();
                             this.router.navigate(['/auth/login']).catch(() => {
                                 this.messageService.add({
                                     severity: 'error',

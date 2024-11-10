@@ -21,6 +21,9 @@ import {BadgeModule} from "primeng/badge";
 import {ContactType} from "../../../model/contact-type";
 import {AuthService} from "../../../auth/auth.service";
 import {ContactService} from "../../../service/contact.service";
+import {InputGroupAddonModule} from "primeng/inputgroupaddon";
+import {InputGroupModule} from "primeng/inputgroup";
+import {TooltipModule} from "primeng/tooltip";
 
 @Component({
     selector: 'wallet',
@@ -37,7 +40,10 @@ import {ContactService} from "../../../service/contact.service";
         DropdownModule,
         DialogModule,
         InputTextareaModule,
-        BadgeModule
+        BadgeModule,
+        InputGroupAddonModule,
+        InputGroupModule,
+        TooltipModule
     ],
     providers: [MessageService, ConfirmationService],
     templateUrl: './wallet.component.html',
@@ -50,6 +56,7 @@ export class WalletComponent implements OnInit {
     contactDialog: boolean = false;
 
     customers: Customer[] = [];
+    contactOptions: { label: string, value: string }[] = [];
     contactTypes: any = ContactType.getOptions();
     draggedCustomer: Customer;
     selectedCustomer: Customer = new Customer();
@@ -96,6 +103,26 @@ export class WalletComponent implements OnInit {
 
     getCustomersByStatus(status: CustomerStatus) {
         return this.customers.filter(customer => customer.customerStatus === status);
+    }
+
+    getCustomerAddress(customer: Customer) {
+        return `${customer.address.neighborhood}, ${customer.address.city} - ${customer.address.state}, ${customer.address.country}`;
+    }
+
+    getCustomerPhoneNumber(phoneNumber: string) {
+        return phoneNumber.length === 11
+            ? `(${phoneNumber.substring(0, 2)}) ${phoneNumber.substring(2, 7)}-${phoneNumber.substring(7, 11)}`
+            : `(${phoneNumber.substring(0, 2)}) ${phoneNumber.substring(2, 6)}-${phoneNumber.substring(6, 10)}`;
+    }
+
+    updateContactOptions() {
+        if (this.contact.info.contactType === ContactType.PHONE || this.contact.info.contactType === ContactType.WHATSAPP) {
+            this.contactOptions = this.selectedCustomer.phoneNumbers.map(phone => ({ label: this.getCustomerPhoneNumber(phone), value: phone }));
+        } else if (this.contact.info.contactType === ContactType.EMAIL) {
+            this.contactOptions = [{ label: this.selectedCustomer.email, value: this.selectedCustomer.email }];
+        } else {
+            this.contactOptions = [];
+        }
     }
 
     dragStart(customer: Customer) {
@@ -209,4 +236,6 @@ export class WalletComponent implements OnInit {
                 return;
         }
     }
+
+    protected readonly ContactType = ContactType;
 }

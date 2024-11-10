@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {User} from "../model/user";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly baseUrl = 'http://localhost:8080/api/v1/auth';
-    public user: User = JSON.parse(localStorage.getItem('user'));
 
     constructor(private http: HttpClient) {}
 
     getToken(): string | null {
         return localStorage.getItem('accessToken');
+    }
+
+    getRefreshToken(): string | null {
+        return localStorage.getItem('refreshToken');
     }
 
     login(username: string, password: string): any {
@@ -26,17 +29,26 @@ export class AuthService {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const isTokenExpired = payload.exp < Date.now() / 1000;
 
-        if (isTokenExpired) this.logout();
-
         return !isTokenExpired;
     }
 
-    refreshToken(): Observable<string> {
-        return this.http.get(`${this.baseUrl}/refresh/${this.user.username}`, { responseType: 'text' });
+    getUsername() {
+        const token = this.getToken();
+        if (!token) {
+            return null;
+        }
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.sub;
     }
 
-    logout(): void {
+    refreshToken(): Observable<Object> {
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getRefreshToken()}`);
+        return this.http.put(`${this.baseUrl}/refresh/${this.getUsername()}`, {}, { headers });
+    }
+
+    logout() {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('userId');
     }
 }

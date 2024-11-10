@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { LayoutService } from 'src/app/service/app.layout.service';
+import {Component, OnInit} from '@angular/core';
+import {LayoutService} from 'src/app/service/app.layout.service';
 import {AuthService} from "../../../auth/auth.service";
 import {Router} from "@angular/router";
 import {MessageService} from "primeng/api";
@@ -10,18 +10,19 @@ import {MessageService} from "primeng/api";
     styles: [`
         :host ::ng-deep .pi-eye,
         :host ::ng-deep .pi-eye-slash {
-            transform:scale(1.6);
+            transform: scale(1.6);
             margin-right: 1rem;
             color: var(--primary-color) !important;
         }
     `],
     providers: [MessageService]
+
 })
 export class LoginComponent {
 
-    valCheck: string[] = ['remember'];
+    rememberMe: boolean = localStorage.getItem('rememberMe') === 'true';
     spinner: boolean = false;
-    username: string = '';
+    username: string = this.rememberMe ? localStorage.getItem('username') : '';
     password: string = '';
 
     constructor(
@@ -43,7 +44,7 @@ export class LoginComponent {
                     severity: 'success',
                     summary: 'Login',
                     detail: 'Logado com sucesso!'
-                })
+                });
                 this.router.navigate(['/']).catch((error: any) => {
                     this.messageService.add({
                         severity: 'error',
@@ -57,10 +58,19 @@ export class LoginComponent {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: error.error.message
+                    detail: error.error
                 });
-                console.log(error);
             }
         });
+    }
+
+    updateRememberMe() {
+        if (this.rememberMe) {
+            localStorage.setItem('rememberMe', 'true');
+            localStorage.setItem('username', this.username);
+        } else {
+            localStorage.setItem('rememberMe', 'false');
+            localStorage.removeItem('username');
+        }
     }
 }

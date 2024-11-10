@@ -4,7 +4,6 @@ export enum CustomerStatus {
     PRESENTATION = 'PRESENTATION',
     PROPOSAL = 'PROPOSAL',
     NEGOTIATION = 'NEGOTIATION',
-    CLOSURE = 'CLOSURE',
     FINALIZED = 'FINALIZED',
     LOST = 'LOST',
     DELETED = 'DELETED',
@@ -18,7 +17,6 @@ export namespace CustomerStatus {
             { label: 'Apresentação', value: CustomerStatus.PRESENTATION },
             { label: 'Proposta', value: CustomerStatus.PROPOSAL },
             { label: 'Negociação', value: CustomerStatus.NEGOTIATION },
-            { label: 'Fechamento', value: CustomerStatus.CLOSURE },
             { label: 'Finalizado', value: CustomerStatus.FINALIZED },
             { label: 'Perdido', value: CustomerStatus.LOST },
         ];

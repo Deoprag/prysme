@@ -95,6 +95,7 @@
                         ],
                         "styles": [
                             "src/styles.scss",
+                            "node_modules/primeicons/primeicons.css"
                         ],
                         "scripts": []
                     }
