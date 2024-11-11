@@ -71,7 +71,6 @@ export class CustomerComponent implements OnInit {
         private customerService: CustomerService,
         private postalCodeService: PostalCodeService,
         private confirmationService: ConfirmationService,
-        private cdr: ChangeDetectorRef,
         private messageService: MessageService,
         public layoutService: LayoutService
     ) {
@@ -151,6 +150,7 @@ export class CustomerComponent implements OnInit {
 
     createCustomer() {
         this.spinner = true;
+        this.customer.seller = localStorage.getItem('username');
         this.customerService.create(this.customer).subscribe({
             next: () => {
                 this.spinner = false;
@@ -209,6 +209,11 @@ export class CustomerComponent implements OnInit {
                 detail: 'Digite um número de telefone válido.'
             });
         }
+    }
+
+    onPhoneRemove(event: any) {
+        const index = this.customer.phoneNumbers.indexOf(event);
+        this.customer.phoneNumbers.slice(index, 1);
     }
 
     checkCpfCnpjValue(event: any) {

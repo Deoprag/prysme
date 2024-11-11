@@ -7,51 +7,107 @@
     <div class="flex flex-row justify-content-between gap-3" style="height: 49rem;">
         <div
             *ngFor="let status of [CustomerStatus.NEW, CustomerStatus.CONTACT, CustomerStatus.PRESENTATION, CustomerStatus.PROPOSAL, CustomerStatus.NEGOTIATION]"
-            class="border-2 surface-border border-round w-20rem overflow-auto"
+            class="border-2 surface-border border-round overflow-auto w-20rem lg:w-30rem flex flex-column gap-2"
             pDroppable (onDrop)="drop(status)">
-            <p class="text-center flex justify-content-between border-primary border-bottom-3 p-3 text-md surface-ground border-round sticky top-0">
-                {{ status }}
-                <p-badge [value]="getCustomersByStatus(status)?.length.toString()"/>
-            </p>
+            <div
+                class="text-center text-lg flex justify-content-between align-items-center font-bold border-bottom-3 p-3 text-md surface-ground border-round sticky top-0"
+                [ngClass]="{
+                    'border-blue-500': status === CustomerStatus.NEW,
+                    'border-red-500': status === CustomerStatus.CONTACT,
+                    'border-orange-500': status === CustomerStatus.PRESENTATION,
+                    'border-yellow-500': status === CustomerStatus.PROPOSAL,
+                    'border-green-500': status === CustomerStatus.NEGOTIATION
+                }">
+                <div class="grid grid-nogutter w-full">
+                    <div class="lg:col-10 col-12 flex justify-content-center mb-2">
+                        {{ status }}
+                    </div>
+                    <div class="lg:col-2 col-12 flex justify-content-center">
+                        <p-tag
+                            [value]="getCustomersByStatus(status)?.length.toString()"
+                            [style]="{
+                                backgroundColor: 'var(--text-color)',
+                                fontSize: '1rem',
+                                borderRadius: '50%',
+                                padding: '0.8rem',
+                                width: '2rem',
+                                height: '2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }"/>
+                    </div>
+                </div>
+            </div>
             <ul class="flex flex-column gap-3 p-0 m-0" style="max-height: 36rem;">
                 <li *ngFor="let customer of getCustomersByStatus(status)"
-                    class="cursor-pointer text-wrap mx-2 p-2 transition-colors surface-ground hover:bg-black-alpha-10 transition-duration-200"
+                    class="overflow-hidden cursor-pointer text-wrap mx-2 p-2 transition-colors surface-ground
+                    hover:bg-black-alpha-10 transition-all border-round-lg shadow-3"
                     pDraggable
                     (onDragStart)="dragStart(customer)"
                     (onDragEnd)="dragEnd()"
-                    style="
-                        min-height: 10rem;
-                        border-left: 0.4rem solid;
-                        border-radius: 0.5rem;
-                    "
+                    style="min-height: 10rem;
+                           border-left: 0.4rem solid;
+                           border-radius: 0.5rem;
+                           transition: all 0.3s;"
                     [ngClass]="{
-                        'border-blue-500': customer.customerStatus === CustomerStatus.NEW,
-                        'border-red-500': customer.customerStatus === CustomerStatus.CONTACT,
-                        'border-orange-500': customer.customerStatus === CustomerStatus.PRESENTATION,
-                        'border-yellow-500': customer.customerStatus === CustomerStatus.PROPOSAL,
-                        'border-green-500': customer.customerStatus === CustomerStatus.NEGOTIATION
+                            'border-blue-500': customer.customerStatus === CustomerStatus.NEW,
+                            'border-red-500': customer.customerStatus === CustomerStatus.CONTACT,
+                            'border-orange-500': customer.customerStatus === CustomerStatus.PRESENTATION,
+                            'border-yellow-500': customer.customerStatus === CustomerStatus.PROPOSAL,
+                            'border-green-500': customer.customerStatus === CustomerStatus.NEGOTIATION
                     }">
                     <div class="w-full p-2 font-bold text-lg">
-                        @if (customer.cpfCnpj.length === 11) {
-                            <i class="pi pi-user text-xl font-bold vertical-align-bottom"></i>
-                        } @else {
-                            <i class="pi pi-briefcase text-xl font-bold "></i>
-                        }
-                        <span class="text-overflow-ellipsis p-2">{{ customer.name.length > 19 ? customer.name.slice(0, 19) + '...' : customer.name }}</span>
+                        <div class="grid grid-nogutter gap-1">
+                            <div class="col-1">
+                                @if (customer.cpfCnpj.length === 11) {
+                                    <i class="pi pi-user text-xl font-bold vertical-align-bottom"></i>
+                                } @else {
+                                    <i class="pi pi-briefcase text-xl font-bold"></i>
+                                }
+                            </div>
+                            <div class="col-10">
+                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
+                                    {{ customer.name }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="w-full p-2 text-sm">
-                        <i class="pi pi-envelope vertical-align-bottom"></i>
-                        <span class="text-overflow-ellipsis p-2">{{ customer.email.length > 32 ? customer.email.slice(0, 32) + '...' : customer.email }}</span>
+                        <div class="grid grid-nogutter gap-1">
+                            <div class="col-1">
+                                <i class="pi pi-envelope vertical-align-bottom"></i>
+                            </div>
+                            <div class="col-10">
+                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
+                                    {{ customer.email }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="w-full p-2 text-sm">
-                        <i class="pi pi-phone vertical-align-bottom"></i>
-                        <span class="text-overflow-ellipsis p-2">{{ getCustomerPhoneNumber(customer.phoneNumbers[0]) }}</span>
+                        <div class="grid grid-nogutter gap-1">
+                            <div class="col-1">
+                                <i class="pi pi-phone vertical-align-bottom"></i>
+                            </div>
+                            <div class="col-10">
+                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
+                                    {{ getCustomerPhoneNumber(customer.phoneNumbers[0]) + (customer.phoneNumbers[1] ? ' - ' + getCustomerPhoneNumber(customer.phoneNumbers[1]) : '') }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="w-full p-2 text-sm">
-                        <i class="pi pi-map-marker vertical-align-bottom"></i>
-                        <span class="text-overflow-ellipsis p-2">
-                            {{ getCustomerAddress(customer).length > 32 ? getCustomerAddress(customer).slice(0, 32) + '...' : getCustomerAddress(customer) }}
-                        </span>
+                        <div class="grid grid-nogutter gap-1">
+                            <div class="col-1">
+                                <i class="pi pi-map-marker vertical-align-bottom"></i>
+                            </div>
+                            <div class="col-10">
+                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
+                                    {{ getCustomerAddress(customer) }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </li>
             </ul>

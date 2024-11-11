@@ -12,6 +12,7 @@ export class Customer {
     customerStatus: CustomerStatus = CustomerStatus.NEW;
     phoneNumbers: string[] = [];
     address: Address = new Address();
+    seller: string;
     createdDate: Date;
     lastModifiedDate: Date;
     createdBy!: string;
