@@ -1,6 +1,5 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {LayoutService} from "../../service/app.layout.service";
-import {debounceTime, forkJoin, Subscription} from "rxjs";
+import {Component, OnInit} from '@angular/core';
+import {forkJoin} from "rxjs";
 import {ButtonModule} from "primeng/button";
 import {CalendarModule} from "primeng/calendar";
 import {ChipsModule} from "primeng/chips";
@@ -12,7 +11,7 @@ import {InputGroupAddonModule} from "primeng/inputgroupaddon";
 import {InputGroupModule} from "primeng/inputgroup";
 import {InputMaskModule} from "primeng/inputmask";
 import {InputTextModule} from "primeng/inputtext";
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import {InputTextareaModule} from 'primeng/inputtextarea';
 import {MessagesModule} from "primeng/messages";
 import {PhoneFormatPipe} from "../../config/pipes/phone.format.pipe";
 import {ConfirmationService, MessageService, SharedModule} from "primeng/api";
@@ -66,7 +65,6 @@ import {SelectButtonModule} from "primeng/selectbutton";
     styleUrl: './product.component.scss'
 })
 export class ProductComponent implements OnInit {
-    subscription!: Subscription;
     productDialog: boolean = false;
     spinner: boolean = false;
 
@@ -78,14 +76,8 @@ export class ProductComponent implements OnInit {
         private productService: ProductService,
         private productCategoryService: ProductCategoryService,
         private confirmationService: ConfirmationService,
-        private cdr: ChangeDetectorRef,
         private messageService: MessageService,
-        public layoutService: LayoutService
     ) {
-        this.subscription = this.layoutService.configUpdate$
-            .pipe(debounceTime(25))
-            .subscribe((config) => {
-            });
     }
 
     ngOnInit() {

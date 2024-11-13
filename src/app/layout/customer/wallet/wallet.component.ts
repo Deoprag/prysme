@@ -8,8 +8,6 @@ import {Customer} from "../../../model/customer";
 import {CustomerStatus} from "../../../model/customer-status";
 import {CustomerService} from "../../../service/customer.service";
 import {CommonModule} from "@angular/common";
-import {debounceTime, Subscription} from "rxjs";
-import {LayoutService} from "../../../service/app.layout.service";
 import {TagModule} from "primeng/tag";
 import {ChipsModule} from "primeng/chips";
 import {FormsModule} from "@angular/forms";
@@ -51,7 +49,6 @@ import {TooltipModule} from "primeng/tooltip";
 })
 export class WalletComponent implements OnInit {
     protected readonly CustomerStatus = CustomerStatus;
-    subscription!: Subscription;
     spinner: boolean = false;
     contactDialog: boolean = false;
 
@@ -69,12 +66,7 @@ export class WalletComponent implements OnInit {
         private messageService: MessageService,
         private authService: AuthService,
         private contactService: ContactService,
-        public layoutService: LayoutService
     ) {
-        this.subscription = this.layoutService.configUpdate$
-            .pipe(debounceTime(25))
-            .subscribe((config) => {
-            });
     }
 
     ngOnInit() {
@@ -117,9 +109,14 @@ export class WalletComponent implements OnInit {
 
     updateContactOptions() {
         if (this.contact.info.contactType === ContactType.PHONE || this.contact.info.contactType === ContactType.WHATSAPP) {
-            this.contactOptions = this.selectedCustomer.phoneNumbers.map(phone => ({ label: this.getCustomerPhoneNumber(phone), value: phone }));
+            this.contactOptions = this.selectedCustomer.phoneNumbers.map(phone => ({
+                label: this.getCustomerPhoneNumber(phone),
+                value: phone
+            }));
+            this.contact.info.value = this.selectedCustomer.phoneNumbers[0];
         } else if (this.contact.info.contactType === ContactType.EMAIL) {
-            this.contactOptions = [{ label: this.selectedCustomer.email, value: this.selectedCustomer.email }];
+            this.contactOptions = [{label: this.selectedCustomer.email, value: this.selectedCustomer.email}];
+            this.contact.info.value = this.selectedCustomer.email;
         } else {
             this.contactOptions = [];
         }
@@ -131,10 +128,6 @@ export class WalletComponent implements OnInit {
         this.draggedCustomerStatus = customer.customerStatus;
     }
 
-    dragEnd() {
-
-    }
-
     drop(newStatus: CustomerStatus) {
         this.customerStatus = this.draggedCustomer.customerStatus;
         if (this.draggedCustomer && this.draggedCustomer.customerStatus !== newStatus) {
@@ -144,19 +137,19 @@ export class WalletComponent implements OnInit {
                     this.saveCustomer();
                     return;
                 case CustomerStatus.CONTACT:
-                        this.contactDialog = true;
+                    this.contactDialog = true;
                     return;
 
                 case CustomerStatus.PRESENTATION:
-                        // this.showPresentationDialog = true;
+                    // this.showPresentationDialog = true;
                     return;
 
                 case CustomerStatus.PROPOSAL:
-                        // this.showProposalDialog = true;
+                    // this.showProposalDialog = true;
                     return;
 
                 case CustomerStatus.NEGOTIATION:
-                        // this.showNegotiationDialog = true;
+                    // this.showNegotiationDialog = true;
                     return;
             }
         }
@@ -237,5 +230,7 @@ export class WalletComponent implements OnInit {
         }
     }
 
-    protected readonly ContactType = ContactType;
+    truncateText(text: string, maxLength: number) {
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
 }

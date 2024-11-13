@@ -1,8 +1,6 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Customer} from "../../model/customer";
-import {LayoutService} from "../../service/app.layout.service";
-import {debounceTime, Subscription} from "rxjs";
 import {TableModule} from "primeng/table";
 import {ButtonModule} from "primeng/button";
 import {InputTextModule} from 'primeng/inputtext';
@@ -26,6 +24,7 @@ import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {TagModule} from "primeng/tag";
 import {MessagesModule} from "primeng/messages";
 import {InputGroupAddonModule} from "primeng/inputgroupaddon";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
     templateUrl: './customer.component.html',
@@ -60,7 +59,6 @@ import {InputGroupAddonModule} from "primeng/inputgroupaddon";
     standalone: true
 })
 export class CustomerComponent implements OnInit {
-    subscription!: Subscription;
     customerDialog: boolean = false;
     spinner: boolean = false;
 
@@ -69,15 +67,11 @@ export class CustomerComponent implements OnInit {
 
     constructor(
         private customerService: CustomerService,
+        private authService: AuthService,
         private postalCodeService: PostalCodeService,
         private confirmationService: ConfirmationService,
         private messageService: MessageService,
-        public layoutService: LayoutService
     ) {
-        this.subscription = this.layoutService.configUpdate$
-            .pipe(debounceTime(25))
-            .subscribe((config) => {
-            });
     }
 
     ngOnInit() {
@@ -115,13 +109,14 @@ export class CustomerComponent implements OnInit {
         this.confirmationService.confirm({
             message: 'Tem certeza que deseja deletar o cliente?',
             header: 'Confirmação',
-            acceptLabel: 'Sim', acceptButtonStyleClass: 'p-button-secondary',
             rejectLabel: 'Não', rejectButtonStyleClass: 'p-button-danger',
+            acceptLabel: 'Sim', acceptButtonStyleClass: 'p-button-secondary',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.deleteCustomer(customer);
             },
-            reject: () => {}
+            reject: () => {
+            }
         });
     }
 
@@ -150,7 +145,7 @@ export class CustomerComponent implements OnInit {
 
     createCustomer() {
         this.spinner = true;
-        this.customer.seller = localStorage.getItem('username');
+        this.customer.seller = this.authService.getUsername();
         this.customerService.create(this.customer).subscribe({
             next: () => {
                 this.spinner = false;
@@ -177,6 +172,8 @@ export class CustomerComponent implements OnInit {
     }
 
     updateCustomer() {
+        this.spinner = true;
+        this.customer.seller = this.authService.getUsername();
         this.customerService.update(this.customer).subscribe({
             next: () => {
                 this.spinner = false;
@@ -185,7 +182,7 @@ export class CustomerComponent implements OnInit {
                     summary: 'Sucesso',
                     detail: 'Cliente atualizado com sucesso.'
                 });
-                this.customer = new Customer();
+                this.clearCustomer();
                 this.customerDialog = false;
                 this.refresh();
             },
@@ -209,11 +206,16 @@ export class CustomerComponent implements OnInit {
                 detail: 'Digite um número de telefone válido.'
             });
         }
-    }
 
-    onPhoneRemove(event: any) {
-        const index = this.customer.phoneNumbers.indexOf(event);
-        this.customer.phoneNumbers.slice(index, 1);
+        if (this.customer.phoneNumbers.indexOf(event.value) !== -1
+            && this.customer.phoneNumbers.indexOf(event.value) !== this.customer.phoneNumbers.length - 1) {
+            this.customer.phoneNumbers.pop();
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erro',
+                detail: 'Número de telefone já foi adicionado.'
+            });
+        }
     }
 
     checkCpfCnpjValue(event: any) {
@@ -268,5 +270,9 @@ export class CustomerComponent implements OnInit {
                 }
             });
         }
+    }
+
+    clearCustomer() {
+        this.customer = new Customer();
     }
 }

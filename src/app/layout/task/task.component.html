@@ -1,0 +1,84 @@
+<p-toast/>
+<p-confirmDialog/>
+<spinner [show]="spinner"></spinner>
+<div class="flex flex-column gap-3 justify-content-around surface-card p-3 border-none border-round-xl shadow-3">
+    <div>
+        <p class="text-4xl text-center font-semibold">Tarefas</p>
+    </div>
+    <div class="col-12 flex justify-content-center gap-3 h-auto">
+        <div class="col-4 surface-ground text-center border-round-xl">
+            <h4>Selecione a data:</h4>
+            <p-calendar
+                class="max-w-full"
+                [inline]="true"
+                [showWeek]="true"
+                [(ngModel)]="date"
+                (ngModelChange)="refresh()"
+            ></p-calendar>
+        </div>
+        <div class="sm:col-8 surface-ground text-center border-round-xl">
+            <div class="mb-3 flex align-items-center justify-content-between">
+                <h4 class="text-center flex-grow-1">Tarefas para a data: {{ date | date: "dd/MM/yyyy" }}</h4>
+                <button pButton icon="pi pi-plus" (click)="taskDialog = true" class="p-button-success"></button>
+            </div>
+
+            <div *ngIf="tasks && tasks.length > 0; else noTasks">
+                <ul class="list-none p-3 flex-row gap-2">
+                    <li *ngFor="let auxTask of tasks" class="flex justify-content-between grid align-items-center mb-2 p-3 border-round-md bg-white">
+                        <div class="md:col-4 col-12">
+                            <span class="font-bold">{{ truncateText(auxTask.title, 30) }}</span>
+                        </div>
+                        <div class="md:col-4 col-12">
+                            <span>{{ truncateText(auxTask.description, 60) }}</span>
+                        </div>
+                        <div class="md:col-4 col-12">
+                            <button pButton icon="pi pi-pencil" (click)="showDialog(auxTask)" class="p-button-sm p-button-info mr-2"></button>
+                            <button pButton icon="pi pi-trash" (click)="deleteTask(auxTask)" class="p-button-sm p-button-danger"></button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <ng-template #noTasks>
+                <p class="text-red-500 font-semibold">Nenhuma tarefa para esta data</p>
+            </ng-template>
+        </div>
+    </div>
+</div>
+
+<p-dialog header="Registrar Tarefa"
+          [(visible)]="taskDialog"
+          [modal]="true"
+          [style]="{width: '40vw'}"
+          [breakpoints]="{ '1379px': '50vw', '767px': '60vw' }"
+          [draggable]="false">
+    <div class="grid p-fluid p-2">
+        <div class="col-12">
+            <div class="p-field">
+                <label for="newContactCustomer">Título</label>
+                <input id="newContactCustomer" type="text" pInputText [(ngModel)]="task.title"/>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="p-field">
+                <label for="notes">Descrição</label>
+                <textarea pInputTextarea
+                          name="Descrição"
+                          id="notes"
+                          [(ngModel)]="task.description"
+                          [autoResize]="true"
+                          class="overflow-auto"
+                          style="min-height: 150px; max-height: 150px"
+                          required
+                          placeholder="Digite a descrição da tarefa">
+                    </textarea>
+            </div>
+        </div>
+    </div>
+    <p-footer>
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                (click)="closeDialog()"></button>
+        <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
+                (click)="saveTask(task)"></button> <!-- [disabled]="customerForm.invalid" -->
+    </p-footer>
+</p-dialog>

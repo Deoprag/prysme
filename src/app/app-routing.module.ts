@@ -25,6 +25,21 @@ import {authGuard} from './auth/auth.guard';
                         loadChildren: () => import('./layout/product/product-routing.module').then(m => m.ProductsRoutingModule),
                         canActivate: [authGuard]
                     },
+                    {
+                        path: '',
+                        loadChildren: () => import('./layout/user/user-routing.module').then(m => m.UsersRoutingModule),
+                        canActivate: [authGuard]
+                    },
+                    {
+                        path: '',
+                        loadChildren: () => import('./layout/task/task-routing.module').then(m => m.TasksRoutingModule),
+                        canActivate: [authGuard]
+                    },
+                    {
+                        path: '',
+                        loadChildren: () => import('./layout/goal/goal-routing.module').then(m => m.GoalsRoutingModule),
+                        canActivate: [authGuard]
+                    },
                 ]
             },
             {path: 'auth', loadChildren: () => import('./layout/auth/auth.module').then(m => m.AuthModule)},

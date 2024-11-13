@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ButtonModule} from "primeng/button";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {DatePipe, NgClass} from "@angular/common";
@@ -15,12 +15,8 @@ import {SpinnerComponent} from "../../../config/components/spinner/spinner.compo
 import {TableModule} from "primeng/table";
 import {TagModule} from "primeng/tag";
 import {ToastModule} from "primeng/toast";
-import {debounceTime, forkJoin, Subscription} from "rxjs";
-import {Product} from "../../../model/product";
 import {ProductCategory} from "../../../model/product-category";
-import {ProductService} from "../../../service/product.service";
 import {ProductCategoryService} from "../../../service/product-category.service";
-import {LayoutService} from "../../../service/app.layout.service";
 
 @Component({
     selector: 'product-category',
@@ -49,7 +45,6 @@ import {LayoutService} from "../../../service/app.layout.service";
     styleUrl: './product-category.component.scss'
 })
 export class ProductCategoryComponent implements OnInit {
-    subscription!: Subscription;
     productCategoryDialog: boolean = false;
     spinner: boolean = false;
 
@@ -59,14 +54,8 @@ export class ProductCategoryComponent implements OnInit {
     constructor(
         private productCategoryService: ProductCategoryService,
         private confirmationService: ConfirmationService,
-        private cdr: ChangeDetectorRef,
         private messageService: MessageService,
-        public layoutService: LayoutService
     ) {
-        this.subscription = this.layoutService.configUpdate$
-            .pipe(debounceTime(25))
-            .subscribe((config) => {
-            });
     }
 
     ngOnInit() {

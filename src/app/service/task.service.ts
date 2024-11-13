@@ -19,6 +19,15 @@ export class TaskService {
         return this.http.get<Task>(`${this.baseUrl}/${id}`);
     }
 
+    findAllByUsername(username: string, date: Date): Observable<Task[]> {
+        const stringDate = date.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).replace(/\//g, '-');
+        return this.http.get<Task[]>(`${this.baseUrl}/findAllByUsername/${username}/${stringDate}`);
+    }
+
     create(task: Task): Observable<Task> {
         return this.http.post<Task>(`${this.baseUrl}/create`, task);
     }

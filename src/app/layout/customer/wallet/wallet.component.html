@@ -2,7 +2,7 @@
 <spinner [show]="spinner"></spinner>
 <div class="flex flex-column gap-3 justify-content-around surface-card p-3 border-none border-round-xl shadow-3">
     <div>
-        <div class="text-4xl text-center font-semibold">Carteira de Clientes</div>
+        <h1 class="text-4xl text-center font-semibold">Carteira de Clientes</h1>
     </div>
     <div class="flex flex-row justify-content-between gap-3" style="height: 49rem;">
         <div
@@ -42,14 +42,10 @@
             <ul class="flex flex-column gap-3 p-0 m-0" style="max-height: 36rem;">
                 <li *ngFor="let customer of getCustomersByStatus(status)"
                     class="overflow-hidden cursor-pointer text-wrap mx-2 p-2 transition-colors surface-ground
-                    hover:bg-black-alpha-10 transition-all border-round-lg shadow-3"
+                    hover:bg-black-alpha-10 transition-all border-round-lg shadow-3 text-md md:text-sm lg:text-lg"
                     pDraggable
                     (onDragStart)="dragStart(customer)"
-                    (onDragEnd)="dragEnd()"
-                    style="min-height: 10rem;
-                           border-left: 0.4rem solid;
-                           border-radius: 0.5rem;
-                           transition: all 0.3s;"
+                    style="min-height: 10rem; border-left: 0.4rem solid; border-radius: 0.5rem; transition: all 0.3s;"
                     [ngClass]="{
                             'border-blue-500': customer.customerStatus === CustomerStatus.NEW,
                             'border-red-500': customer.customerStatus === CustomerStatus.CONTACT,
@@ -57,7 +53,8 @@
                             'border-yellow-500': customer.customerStatus === CustomerStatus.PROPOSAL,
                             'border-green-500': customer.customerStatus === CustomerStatus.NEGOTIATION
                     }">
-                    <div class="w-full p-2 font-bold text-lg">
+
+                    <div class="w-full p-2 font-bold text-lg md:text-md sm:text-sm">
                         <div class="grid grid-nogutter gap-1">
                             <div class="col-1">
                                 @if (customer.cpfCnpj.length === 11) {
@@ -67,44 +64,51 @@
                                 }
                             </div>
                             <div class="col-10">
-                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
-                                    {{ customer.name }}
+                                <span
+                                    class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2 text-lg md:text-md sm:text-sm">
+                                    {{ truncateText(customer.name, 30) }}
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <div class="w-full p-2 text-sm">
+
+                    <div class="w-full p-2 text-md md:text-sm sm:text-xs">
                         <div class="grid grid-nogutter gap-1">
                             <div class="col-1">
                                 <i class="pi pi-envelope vertical-align-bottom"></i>
                             </div>
                             <div class="col-10">
-                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
-                                    {{ customer.email }}
+                                <span
+                                    class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2 text-md md:text-sm sm:text-xs">
+                                    {{ truncateText(customer.email, 33) }}
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <div class="w-full p-2 text-sm">
+
+                    <div class="w-full p-2 text-md md:text-sm sm:text-xs">
                         <div class="grid grid-nogutter gap-1">
                             <div class="col-1">
                                 <i class="pi pi-phone vertical-align-bottom"></i>
                             </div>
                             <div class="col-10">
-                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
-                                    {{ getCustomerPhoneNumber(customer.phoneNumbers[0]) + (customer.phoneNumbers[1] ? ' - ' + getCustomerPhoneNumber(customer.phoneNumbers[1]) : '') }}
+                                <span
+                                    class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2 text-md md:text-sm sm:text-xs">
+                                    {{ truncateText(getCustomerPhoneNumber(customer.phoneNumbers[0]) + (customer.phoneNumbers[1] ? ' - ' + getCustomerPhoneNumber(customer.phoneNumbers[1]) : ''), 35) }}
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <div class="w-full p-2 text-sm">
+
+                    <div class="w-full p-2 text-md md:text-sm sm:text-xs">
                         <div class="grid grid-nogutter gap-1">
                             <div class="col-1">
                                 <i class="pi pi-map-marker vertical-align-bottom"></i>
                             </div>
                             <div class="col-10">
-                                <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2">
-                                    {{ getCustomerAddress(customer) }}
+                                <span
+                                    class="text-overflow-ellipsis overflow-hidden white-space-nowrap p-2 text-md md:text-sm sm:text-xs">
+                                    {{ truncateText(getCustomerAddress(customer), 35) }}
                                 </span>
                             </div>
                         </div>
@@ -138,7 +142,8 @@
                     name="Categoria"
                     [appendTo]="'body'"
                     [options]="contactTypes"
-                    (onChange)="contact.info.contactType = $event.value.value; updateContactOptions()"
+                    (onChange)="
+                        contact.info.contactType = $event.value.value; updateContactOptions(); contact.info.value = null"
                     optionLabel="label"
                     placeholder="Selecione uma categoria"/>
             </div>
@@ -153,6 +158,7 @@
                     [appendTo]="'body'"
                     [options]="contactOptions"
                     optionLabel="label"
+                    [(ngModel)]="contact.info.value"
                     (onChange)="contact.info.value = $event.value.value"
                     [editable]="true">
                 </p-dropdown>

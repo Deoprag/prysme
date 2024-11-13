@@ -66,7 +66,8 @@
                   [style]="{width: '55vw'}"
                   [breakpoints]="{ '1379px': '75vw', '767px': '90vw' }"
                   [maximizable]="true"
-                  [draggable]="false">
+                  [draggable]="false"
+                  (onHide)="clearCustomer()">
             <div class="grid p-fluid p-2">
                 <div class="col-12 lg:col-4">
                     <div class="p-field">
