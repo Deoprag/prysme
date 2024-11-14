@@ -8,7 +8,7 @@ import {InputMaskModule} from 'primeng/inputmask';
 import {DialogModule} from "primeng/dialog";
 import {ChipsModule} from "primeng/chips";
 import {DropdownModule} from "primeng/dropdown";
-import {DatePipe, NgClass, NgIf, NgStyle} from "@angular/common";
+import {DatePipe, JsonPipe, NgClass, NgIf, NgStyle} from "@angular/common";
 import {CalendarModule} from "primeng/calendar";
 import {ListboxModule} from "primeng/listbox";
 import {InputGroupModule} from "primeng/inputgroup";
@@ -25,6 +25,7 @@ import {TagModule} from "primeng/tag";
 import {MessagesModule} from "primeng/messages";
 import {InputGroupAddonModule} from "primeng/inputgroupaddon";
 import {AuthService} from "../../auth/auth.service";
+import {CustomerStatus} from "../../model/customer-status";
 
 @Component({
     templateUrl: './customer.component.html',
@@ -53,7 +54,8 @@ import {AuthService} from "../../auth/auth.service";
         TagModule,
         NgClass,
         MessagesModule,
-        InputGroupAddonModule
+        InputGroupAddonModule,
+        JsonPipe
     ],
     providers: [MessageService, ConfirmationService],
     standalone: true
@@ -102,6 +104,7 @@ export class CustomerComponent implements OnInit {
 
     editCustomer(customer: Customer) {
         this.customer = {...customer};
+        console.log(this.customer.birthFoundationDate instanceof Date);  // Deve retornar true
         this.customerDialog = true;
     }
 
@@ -275,4 +278,6 @@ export class CustomerComponent implements OnInit {
     clearCustomer() {
         this.customer = new Customer();
     }
+
+    protected readonly CustomerStatus = CustomerStatus;
 }

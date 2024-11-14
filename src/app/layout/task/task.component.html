@@ -6,41 +6,70 @@
         <p class="text-4xl text-center font-semibold">Tarefas</p>
     </div>
     <div class="col-12 flex justify-content-center gap-3 h-auto">
-        <div class="col-4 surface-ground text-center border-round-xl">
-            <h4>Selecione a data:</h4>
-            <p-calendar
-                class="max-w-full"
-                [inline]="true"
-                [showWeek]="true"
-                [(ngModel)]="date"
-                (ngModelChange)="refresh()"
-            ></p-calendar>
-        </div>
-        <div class="sm:col-8 surface-ground text-center border-round-xl">
-            <div class="mb-3 flex align-items-center justify-content-between">
-                <h4 class="text-center flex-grow-1">Tarefas para a data: {{ date | date: "dd/MM/yyyy" }}</h4>
-                <button pButton icon="pi pi-plus" (click)="taskDialog = true" class="p-button-success"></button>
+        <div class="col-4 flex justify-content-center align-items-center surface-ground text-center border-round-xl" style="height: 49rem;">
+            <div>
+                <h4 class="">Selecione a data:</h4>
+                <p-calendar
+                    class="max-w-full"
+                    [inline]="true"
+                    [showWeek]="true"
+                    [(ngModel)]="date"
+                    (ngModelChange)="refresh()"
+                ></p-calendar>
             </div>
-
+        </div>
+        <div class="sm:col-8 surface-ground text-center border-round-xl" style="height: 49rem;">
             <div *ngIf="tasks && tasks.length > 0; else noTasks">
-                <ul class="list-none p-3 flex-row gap-2">
-                    <li *ngFor="let auxTask of tasks" class="flex justify-content-between grid align-items-center mb-2 p-3 border-round-md bg-white">
-                        <div class="md:col-4 col-12">
-                            <span class="font-bold">{{ truncateText(auxTask.title, 30) }}</span>
+                <p-table [paginator]="true"
+                         [scrollable]="true"
+                         [rows]="10"
+                         [value]="tasks" class="p-datatable-sm surface-0">
+                    <ng-template pTemplate="caption">
+                        <div class="p-mt-4 flex justify-content-between align-items-center gap-2">
+                            <div class="p-2 flex gap-2">
+                            </div>
+                            <div class="text-4xl">
+                                <h4 class="text-center flex-grow-1">Tarefas para a
+                                    data: {{ date | date: "dd/MM/yyyy" }}</h4>
+                            </div>
+                            <div class="p-2 flex gap-2">
+                                <button *ngIf="isTaskEditable(date)" pButton icon="pi pi-plus" class="p-button-success p-mr-2"
+                                        (click)="taskDialog = true"></button>
+                            </div>
                         </div>
-                        <div class="md:col-4 col-12">
-                            <span>{{ truncateText(auxTask.description, 60) }}</span>
-                        </div>
-                        <div class="md:col-4 col-12">
-                            <button pButton icon="pi pi-pencil" (click)="showDialog(auxTask)" class="p-button-sm p-button-info mr-2"></button>
-                            <button pButton icon="pi pi-trash" (click)="deleteTask(auxTask)" class="p-button-sm p-button-danger"></button>
-                        </div>
-                    </li>
-                </ul>
+                    </ng-template>
+
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="p-3 text-left">Título</th>
+                            <th class="p-3 text-left">Descrição</th>
+                            <th class="p-3 text-center">Ações</th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-task>
+                        <tr>
+                            <td class="p-3 text-left">
+                                <span>{{ truncateText(task.title, 30) }}</span>
+                            </td>
+                            <td class="p-3 text-left">
+                                <span>{{ truncateText(task.description, 60) }}</span>
+                            </td>
+                            <td class="p-3 text-center">
+                                <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-pencil" (click)="showDialog(task)"
+                                        class="p-button-sm p-button-info mr-2"></button>
+                                <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-trash" (click)="confirmDeleteTask(task)"
+                                        class="p-button-sm p-button-danger"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
             </div>
 
             <ng-template #noTasks>
-                <p class="text-red-500 font-semibold">Nenhuma tarefa para esta data</p>
+                <p class="p-3 text-center text-red-400 font-semibold text-2xl">Nenhuma tarefa para a data: {{ date | date: "dd/MM/yyyy" }}</p>
+                <button *ngIf="isTaskEditable(date)" pButton icon="pi pi-plus" label="Adicionar" class="p-button-success p-mr-2"
+                        (click)="taskDialog = true"></button>
             </ng-template>
         </div>
     </div>

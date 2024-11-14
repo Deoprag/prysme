@@ -18,6 +18,8 @@ export class AppMenuComponent implements OnInit {
     }
 
     ngOnInit() {
+        const userRoles = this.authService.getRoles();
+
         this.model = [
             {
                 label: 'Home',
@@ -51,7 +53,8 @@ export class AppMenuComponent implements OnInit {
                         routerLink: ['/users'],
                         role: ''
                     },
-                ]
+                ],
+                role: 'MANAGER'
             },
             {
                 label: 'Clientes',
@@ -66,7 +69,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Carteira',
                         icon: 'pi pi-fw pi-wallet',
                         routerLink: ['/customers/wallet'],
-                        role: ''
+                        role: 'SELLER'
                     },
                 ]
             },
@@ -88,5 +91,19 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
         ];
+
+        this.model = this.model.filter(menu => {
+            if (menu.role && !userRoles.includes(menu.role)) {
+                return false;
+            }
+
+            menu.items = menu.items.filter(item => {
+                if (!item.role) return true;
+                return userRoles.some(role => role === item.role);
+            });
+
+            return menu.items.length > 0;
+        });
     }
+
 }

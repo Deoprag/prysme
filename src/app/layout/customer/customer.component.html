@@ -52,7 +52,10 @@
                       'text-green-300 font-semibold': customer.customerStatus === 'NEW',
                       'text-red-300': customer.customerStatus === 'LOST'}">
                     <p-tag
-                        [severity]="customer.customerStatus === 'NEW' ? 'success' : customer.customerStatus === 'LOST' ? 'danger' : 'primary'"
+                        [severity]="
+                        customer.customerStatus === CustomerStatus.NEW ? 'success'
+                        : customer.customerStatus === CustomerStatus.LOST ? 'danger'
+                        : 'primary'"
                         value="{{ customer.customerStatus }}"/>
                 </td>
             </tr>
@@ -161,7 +164,7 @@
                             name="stateRegistration"
                             id="stateRegistration"
                             [(ngModel)]="customer.stateRegistration"
-                            mask="999.999.999.999"/>
+                            mask="999999999?999"/>
                     </div>
                 </div>
 

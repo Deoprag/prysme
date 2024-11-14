@@ -13,6 +13,8 @@ import {CustomerStatus} from "../../model/customer-status";
 import {DialogModule} from "primeng/dialog";
 import {InputTextModule} from "primeng/inputtext";
 import {InputTextareaModule} from "primeng/inputtextarea";
+import {TableModule} from "primeng/table";
+import {Customer} from "../../model/customer";
 
 @Component({
   selector: 'app-task',
@@ -28,7 +30,8 @@ import {InputTextareaModule} from "primeng/inputtextarea";
         NgForOf,
         DialogModule,
         InputTextModule,
-        InputTextareaModule
+        InputTextareaModule,
+        TableModule
     ],
     providers: [MessageService, ConfirmationService],
   templateUrl: './task.component.html',
@@ -45,10 +48,17 @@ export class TaskComponent implements OnInit {
         private authService: AuthService,
         private taskService: TaskService,
         private messageService: MessageService,
+        private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit() {
         this.refresh();
+    }
+
+    currentDate(): Date {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today;
     }
 
     refresh() {
@@ -87,6 +97,7 @@ export class TaskComponent implements OnInit {
     createTask(task: Task) {
         this.spinner = true;
         this.task.userId = Number.parseInt(localStorage.getItem("userId"));
+        this.task.dueDate = this.date;
         this.taskService.create(task).subscribe({
             next: (response: any) => {
                 this.spinner = false;
@@ -132,10 +143,56 @@ export class TaskComponent implements OnInit {
     }
 
     deleteTask(task: Task) {
-
+        this.spinner = true;
+        this.taskService.delete(task.id).subscribe({
+            next: () => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Tarefa deletada com sucesso.'
+                });
+                this.refresh();
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.error.message
+                });
+            }
+        });
     }
 
     truncateText(text: string, maxLength: number) {
         return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
+
+    isTaskEditable(dueDate: Date): boolean {
+        const today = new Date();
+        const taskDate = new Date(dueDate);
+
+        return taskDate.getFullYear() > today.getFullYear() ||
+            (taskDate.getFullYear() === today.getFullYear() &&
+                taskDate.getMonth() > today.getMonth()) ||
+            (taskDate.getFullYear() === today.getFullYear() &&
+                taskDate.getMonth() === today.getMonth() &&
+                taskDate.getDate() >= today.getDate());
+    }
+
+    confirmDeleteTask(task: Task) {
+        this.confirmationService.confirm({
+            message: 'Tem certeza que deseja deletar a tarefa?',
+            header: 'Confirmação',
+            rejectLabel: 'Não', rejectButtonStyleClass: 'p-button-danger',
+            acceptLabel: 'Sim', acceptButtonStyleClass: 'p-button-secondary',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                this.deleteTask(task);
+            },
+            reject: () => {
+            }
+        });
     }
 }
