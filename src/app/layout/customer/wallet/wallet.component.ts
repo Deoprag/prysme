@@ -51,6 +51,9 @@ export class WalletComponent implements OnInit {
     protected readonly CustomerStatus = CustomerStatus;
     spinner: boolean = false;
     contactDialog: boolean = false;
+    presentationDialog: boolean = false;
+    proposalDialog: boolean = false;
+    negotiationDialog: boolean = false;
 
     customers: Customer[] = [];
     contactOptions: { label: string, value: string }[] = [];
@@ -141,15 +144,15 @@ export class WalletComponent implements OnInit {
                     return;
 
                 case CustomerStatus.PRESENTATION:
-                    // this.showPresentationDialog = true;
+                    this.presentationDialog = true;
                     return;
 
                 case CustomerStatus.PROPOSAL:
-                    // this.showProposalDialog = true;
+                    this.proposalDialog = true;
                     return;
 
                 case CustomerStatus.NEGOTIATION:
-                    // this.showNegotiationDialog = true;
+                    this.negotiationDialog = true;
                     return;
             }
         }
@@ -159,7 +162,7 @@ export class WalletComponent implements OnInit {
         this.spinner = true;
 
         this.customerService.update(this.draggedCustomer).subscribe({
-            next: (data: any) => {
+            next: (response: any) => {
                 this.spinner = false;
                 this.refresh();
                 this.messageService.add({
@@ -188,7 +191,7 @@ export class WalletComponent implements OnInit {
         this.contact.contactDate = new Date();
 
         this.contactService.create(this.contact).subscribe({
-            next: (data: any) => {
+            next: (response: any) => {
                 this.spinner = false;
                 this.contactDialog = false;
                 this.refresh();
@@ -217,15 +220,15 @@ export class WalletComponent implements OnInit {
                 return;
 
             case CustomerStatus.PRESENTATION:
-                // this.showPresentationDialog = true;
+                this.presentationDialog = true;
                 return;
 
             case CustomerStatus.PROPOSAL:
-                // this.showProposalDialog = true;
+                this.proposalDialog = true;
                 return;
 
             case CustomerStatus.NEGOTIATION:
-                // this.showNegotiationDialog = true;
+                this.negotiationDialog = true;
                 return;
         }
     }

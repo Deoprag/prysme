@@ -31,12 +31,6 @@ export class AppMenuComponent implements OnInit {
                         role: ''
                     },
                     {
-                        label: 'Metas',
-                        icon: 'pi pi-fw pi-chart-line',
-                        routerLink: ['/goals'],
-                        role: ''
-                    },
-                    {
                         label: 'Tarefas',
                         icon: 'pi pi-fw pi-calendar',
                         routerLink: ['/tasks'],
@@ -45,12 +39,30 @@ export class AppMenuComponent implements OnInit {
                 ],
             },
             {
-                label: 'Equipe',
+                label: 'Administração',
                 items: [
                     {
                         label: 'Usuários',
                         icon: 'pi pi-fw pi-users',
                         routerLink: ['/users'],
+                        role: ''
+                    },
+                ],
+                role: 'ADMIN'
+            },
+            {
+                label: 'Equipe',
+                items: [
+                    {
+                        label: 'Metas',
+                        icon: 'pi pi-fw pi-chart-line',
+                        routerLink: ['/goals'],
+                        role: ''
+                    },
+                    {
+                        label: 'Vendedores',
+                        icon: 'pi pi-fw pi-users',
+                        routerLink: ['/seller'],
                         role: ''
                     },
                 ],

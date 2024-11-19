@@ -58,7 +58,7 @@ export class LoginComponent {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: error.error
+                    detail: error.error.message
                 });
             }
         });

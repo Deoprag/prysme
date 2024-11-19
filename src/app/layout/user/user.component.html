@@ -1,1 +1,258 @@
-<p>user works!</p>
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+<spinner [show]="spinner"></spinner>
+<div class="surface-card p-3 border-none border-round-xl shadow-3">
+    <p-table [value]="users"
+             [paginator]="true"
+             [scrollable]="true"
+             [rows]="10">
+        <ng-template pTemplate="caption">
+            <div class="p-mt-4 flex justify-content-between gap-2">
+                <div class="p-2 flex gap-2">
+                    <button pButton icon="pi pi-print" class="p-button-help p-mr-2"
+                            (click)="printUsers()"></button>
+                </div>
+                <div class="text-4xl">Usuários</div>
+                <div class="p-2 flex gap-2">
+                    <button pButton icon="pi pi-plus" class="p-button-success p-mr-2"
+                            (click)="userDialog = true"></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th></th>
+                <th class="font-semibold">Nome de Usuário</th>
+                <th class="font-semibold">Nome</th>
+                <th class="font-semibold">Email</th>
+                <th class="font-semibold">Equipe</th>
+                <th class="font-semibold text-center">Alterado Por</th>
+                <th class="font-semibold">Data Atualização</th>
+                <th class="font-semibold text-center">Status</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+            <tr>
+                <td>
+                    <div class="flex gap-2">
+                        <button class="p-button-info p-button-raised" pButton icon="pi pi-pencil"
+                                (click)="editUser(user)"></button>
+                        <button class="p-button-danger p-button-raised" pButton icon="pi pi-trash"
+                                (click)="confirmDeleteUser(user)"></button>
+                    </div>
+                </td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.team }}</td>
+                <td class="text-center"><p-tag
+                    severity="warning"
+                    value="{{ user.lastModifiedBy }}"/>
+                </td>
+                <td>{{ user.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
+                <td class="text-center" [ngClass]="{
+                      'text-green-300 font-semibold': user.enabled,
+                      'text-red-300': !user.enabled
+                    }">
+                    <p-tag
+                        [severity]="user.enabled ? 'success' : 'danger'"
+                        [value]="user.enabled ? 'Ativo' : 'Inativo'">
+                    </p-tag>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<form #userForm="ngForm" name="userForm">
+    <p-dialog header="Novo Usuário"
+              [(visible)]="userDialog"
+              [modal]="true"
+              [style]="{width: '55vw'}"
+              [breakpoints]="{ '1379px': '75vw', '767px': '90vw' }"
+              [maximizable]="true"
+              [draggable]="false"
+              (onHide)="clearUser()">
+        <div class="grid p-fluid p-2">
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="username">Nome de Usuário</label>
+                    <input pInputText
+                           name="username"
+                           id="username"
+                           [(ngModel)]="user.username"
+                           required
+                           placeholder="Digite o username"
+                           #username="ngModel"
+                           [ngClass]="{'ng-invalid': username.invalid && username.touched}"/>
+                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="username.invalid && username.touched" [textContent]="'Nome de usuário é obrigatório'"></p-messages>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="email">Email</label>
+                    <input pInputText
+                           type="email"
+                           name="email"
+                           id="email"
+                           [(ngModel)]="user.email"
+                           required
+                           email
+                           placeholder="Digite o email"
+                           #email="ngModel"
+                           [ngClass]="{'ng-invalid': email.invalid && email.touched}"/>
+                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="email.invalid && email.touched" [textContent]="'Email é obrigatório'"></p-messages>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="team">Equipe</label>
+                    <p-dropdown
+                        [options]="teams"
+                        optionLabel="name"
+                        placeholder="Selecione a equipe"
+                        name="team"
+                        id="team"
+                        [(ngModel)]="selectedTeam"
+                        (ngModelChange)="onTeamChange()"
+                        required
+                        #team="ngModel"
+                        [ngClass]="{'ng-invalid': team.invalid && team.touched}">
+                    </p-dropdown>
+                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="team.invalid && team.touched" [textContent]="'Equipe é obrigatória'"></p-messages>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="firstName">Nome</label>
+                    <input pInputText
+                           name="firstName"
+                           id="firstName"
+                           [(ngModel)]="user.firstName"
+                           required
+                           placeholder="Digite o nome"
+                           #firstName="ngModel"
+                           [ngClass]="{'ng-invalid': firstName.invalid && firstName.touched}"/>
+                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="firstName.invalid && firstName.touched" [textContent]="'Nome é obrigatório'"></p-messages>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="lastName">Sobrenome</label>
+                    <input pInputText
+                           name="lastName"
+                           id="lastName"
+                           [(ngModel)]="user.lastName"
+                           required
+                           placeholder="Digite o sobrenome"
+                           #lastName="ngModel"
+                           [ngClass]="{'ng-invalid': lastName.invalid && lastName.touched}"/>
+                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="lastName.invalid && lastName.touched" [textContent]="'Sobrenome é obrigatório'"></p-messages>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <div class="p-field">
+                    <label for="birthFoundationDate">Data de Nascimento</label>
+                    <p-calendar
+                        name="birthFoundationDate"
+                        id="birthFoundationDate"
+                        [(ngModel)]="user.birthDate"
+                        [showIcon]="true"
+                        [iconDisplay]="'input'"
+                        [baseZIndex]="1000"
+                        [appendTo]="'body'"
+                        dateFormat="dd/mm/yy"
+                        required
+                        placeholder="Selecione a data"
+                    />
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-2">
+                <div class="p-field">
+                    <label for="gender">Gênero</label>
+                    <p-dropdown
+                        [options]="genders"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Selecione o gênero"
+                        name="gender"
+                        [appendTo]="'body'"
+                        id="gender"
+                        [(ngModel)]="user.gender"
+                        required
+                        #gender="ngModel"
+                        [ngClass]="{'ng-invalid': gender.invalid && gender.touched}">
+                    </p-dropdown>
+                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="gender.invalid && gender.touched" [textContent]="'Gênero é obrigatório'"></p-messages>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-3">
+                <div class="p-field">
+                    <label for="phoneNumber">Telefone</label>
+                    <p-inputMask
+                           name="phoneNumber"
+                           id="phoneNumber"
+                           [(ngModel)]="user.phoneNumber"
+                           required
+                           mask="(99) 99999-999?9"
+                           placeholder="Digite o telefone"
+                           #phoneNumber="ngModel"
+                           [ngClass]="{'ng-invalid': phoneNumber.invalid && phoneNumber.touched}"/>
+                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="phoneNumber.invalid && phoneNumber.touched" [textContent]="'Telefone é obrigatório'"></p-messages>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-3">
+                <div class="p-field">
+                    <label for="permissions">Permissões</label>
+                    <p-multiSelect
+                        name="permissions"
+                        id="permissions"
+                        [options]="permissions"
+                        [(ngModel)]="selectedPermissions"
+                        optionLabel="description"
+                        [appendTo]="'body'"
+                        placeholder="Selecione as permissões"
+                        (ngModelChange)="onPermissionsChange()" />
+                </div>
+            </div>
+
+            <div class="col-12 md:col-4 flex flex-row align-content-center justify-content-around mt-3">
+                <div class="flex align-items-center">
+                    <p-radioButton
+                        name="active"
+                        [value]="true"
+                        [(ngModel)]="user.enabled"
+                        id="activeTrue"/>
+                    <label for="activeTrue" class="ml-2">
+                        Ativo
+                    </label>
+                </div>
+                <div class="flex align-items-center ml-2">
+                    <p-radioButton
+                        name="active"
+                        [value]="false"
+                        [(ngModel)]="user.enabled"
+                        id="activeFalse"/>
+                    <label for="activeFalse" class="ml-2">
+                        Inativo
+                    </label>
+                </div>
+            </div>
+        </div>
+        <p-footer>
+            <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                    (click)="userDialog = false"></button>
+            <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
+                    (click)="saveUser()"
+                    [disabled]="userForm.invalid"></button>
+        </p-footer>
+    </p-dialog>
+</form>

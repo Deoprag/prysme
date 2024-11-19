@@ -12,9 +12,11 @@ export class User {
     gender: string;
     phoneNumber: string;
     password: string;
-    active: boolean;
-    team: Team;
+    enabled: boolean = true;
+    teamId: number;
+    team!: string;
     tasks: Task[];
+    permissions!: string[];
     createdDate: Date;
     lastModifiedDate: Date;
     createdBy!: string;

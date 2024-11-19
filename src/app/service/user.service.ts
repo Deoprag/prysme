@@ -15,6 +15,10 @@ export class UserService {
         return this.http.get<User[]>(this.baseUrl);
     }
 
+    findAllByTeamId(id: number): Observable<User[]> {
+        return this.http.get<User[]>(`${this.baseUrl}/findAllByTeamId/${id}`);
+    }
+
     findById(id: number): Observable<User> {
         return this.http.get<User>(`${this.baseUrl}/${id}`);
     }
