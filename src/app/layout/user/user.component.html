@@ -26,7 +26,6 @@
                 <th class="font-semibold">Nome</th>
                 <th class="font-semibold">Email</th>
                 <th class="font-semibold">Equipe</th>
-                <th class="font-semibold text-center">Alterado Por</th>
                 <th class="font-semibold">Data Atualização</th>
                 <th class="font-semibold text-center">Status</th>
             </tr>
@@ -45,10 +44,6 @@
                 <td>{{ user.firstName }} {{ user.lastName }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.team }}</td>
-                <td class="text-center"><p-tag
-                    severity="warning"
-                    value="{{ user.lastModifiedBy }}"/>
-                </td>
                 <td>{{ user.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
                 <td class="text-center" [ngClass]="{
                       'text-green-300 font-semibold': user.enabled,

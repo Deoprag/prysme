@@ -39,6 +39,7 @@ import {Customer} from "../../model/customer";
 })
 export class TaskComponent implements OnInit {
     spinner: boolean = false;
+    isViewing: boolean = false;
     taskDialog: boolean = false;
     date: Date = new Date();
     task: Task = new Task();
@@ -87,6 +88,7 @@ export class TaskComponent implements OnInit {
     closeDialog() {
         this.refresh();
         this.task = new Task();
+        this.isViewing = false;
         this.taskDialog = false;
     }
 
@@ -194,5 +196,10 @@ export class TaskComponent implements OnInit {
             reject: () => {
             }
         });
+    }
+
+    showTask(task: Task) {
+        this.showDialog(task);
+        this.isViewing = true;
     }
 }

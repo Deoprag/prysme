@@ -36,8 +36,8 @@
                     <div class="flex gap-2">
                         <button class="p p-button-info p-button-raised" pButton icon="pi pi-pencil"
                                 (click)="editCustomer(customer)"></button>
-                        <button class="p p-button-danger p-button-raised" pButton icon="pi pi-trash"
-                                (click)="confirmDeleteCustomer(customer)"></button>
+<!--                        <button class="p p-button-danger p-button-raised" pButton icon="pi pi-trash"-->
+<!--                                (click)="confirmDeleteCustomer(customer)"></button>-->
                     </div>
                 </td>
                 <td>{{ formatCpfCnpj(customer.cpfCnpj) }}</td>
@@ -52,8 +52,7 @@
                       'text-green-300 font-semibold': customer.customerStatus === 'NEW',
                       'text-red-300': customer.customerStatus === 'LOST'}">
                     <p-tag
-                        [severity]="
-                        customer.customerStatus === CustomerStatus.NEW ? 'success'
+                        [severity]="customer.customerStatus === CustomerStatus.NEW ? 'success'
                         : customer.customerStatus === CustomerStatus.LOST ? 'danger'
                         : 'primary'"
                         value="{{ customer.customerStatus }}"/>
@@ -172,6 +171,7 @@
                     <div class="p-field">
                         <label for="phoneNumbers">Telefones</label>
                         <p-chips
+                            id="phoneNumbers"
                             name="phoneNumbers"
                             pTooltip="Aperte ENTER para inserir (max. 2)"
                             tooltipEvent="focus"

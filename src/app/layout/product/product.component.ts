@@ -71,6 +71,7 @@ export class ProductComponent implements OnInit {
     products: Product[];
     product: Product = new Product();
     productCategories: ProductCategory[];
+    selectedProductCategory: ProductCategory = new ProductCategory();
 
     constructor(
         private productService: ProductService,
@@ -85,6 +86,8 @@ export class ProductComponent implements OnInit {
     }
 
     refresh() {
+        this.product = new Product();
+        this.selectedProductCategory = new ProductCategory()
         this.spinner = true;
 
         forkJoin({
@@ -121,8 +124,6 @@ export class ProductComponent implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.deleteProduct(product);
-            },
-            reject: () => {
             }
         });
     }

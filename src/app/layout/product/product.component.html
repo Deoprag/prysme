@@ -64,6 +64,7 @@
               [style]="{width: '55vw'}"
               [breakpoints]="{ '1379px': '75vw', '767px': '90vw' }"
               [maximizable]="true"
+              (onHide)="refresh()"
               [draggable]="false">
         <div class="grid p-fluid p-2">
             <div class="col-12">
@@ -117,6 +118,7 @@
                         name="Categoria"
                         [appendTo]="'body'"
                         [options]="productCategories"
+                        [ngModel]="selectedProductCategory"
                         (onChange)="product.categoryId = $event.value.id; product.categoryName = $event.value.name"
                         optionLabel="name"
                         placeholder="Selecione uma categoria"

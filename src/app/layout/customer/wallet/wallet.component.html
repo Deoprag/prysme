@@ -44,6 +44,7 @@
                     class="overflow-hidden cursor-pointer text-wrap mx-2 p-2 transition-colors surface-ground
                     hover:bg-black-alpha-10 transition-all border-round-lg shadow-3 text-md md:text-sm lg:text-lg"
                     pDraggable
+                    (click)="selectedCustomer = customer; loadContacts()"
                     (onDragStart)="dragStart(customer)"
                     style="min-height: 10rem; border-left: 0.4rem solid; border-radius: 0.5rem; transition: all 0.3s;"
                     [ngClass]="{
@@ -119,6 +120,134 @@
     </div>
 </div>
 
+@if (selectedCustomer.cpfCnpj) {
+    <p-dialog
+        header="Dados do Cliente"
+        [(visible)]="clientDialog"
+        [modal]="true"
+        [style]="{width: '50vw'}"
+        [breakpoints]="{ '1379px': '60vw', '767px': '70vw' }"
+        [draggable]="false"
+        [maximizable]="true"
+        (onHide)="closeDialog(CustomerStatus.DELETED); refresh();">
+        <div class="w-full p-5 overflow-y-auto">
+            <div class="flex align-items-center gap-3 border-b-1 border-gray-300 pb-3 mb-4">
+                <i class="pi pi-id-card text-6xl text-primary" pTooltip="Nome/Nome Fantasia"
+                   tooltipPosition="top"></i>
+                <div>
+                    <h1 class="text-xl font-bold text-primary m-0">{{ selectedCustomer.name }}</h1>
+                    <p class="text-md text-secondary m-0">{{ selectedCustomer.tradeName }}</p>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="col-12 lg:col-6 mb-4">
+                    <h2 class="text-xl font-semibold text-primary mb-3">Informações Gerais</h2>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-id-card text-xl text-primary" pTooltip="CPF/CNPJ" tooltipPosition="top"></i>
+                        <span class="text-md">{{ selectedCustomer.cpfCnpj | cpfCnpj }}</span>
+                    </div>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-calendar text-xl text-primary" pTooltip="Nascimento/Fundação"
+                           tooltipPosition="top"></i>
+                        <span class="text-md">{{ selectedCustomer.birthFoundationDate | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-envelope text-xl text-primary" pTooltip="E-mail" tooltipPosition="top"></i>
+                        <span class="text-md">{{ selectedCustomer.email }}</span>
+                    </div>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-phone text-xl text-primary" pTooltip="Telefones" tooltipPosition="top"></i>
+                        <span class="text-md">
+                        {{ selectedCustomer.phoneNumbers[0] | phoneNumber }}
+                            @if (selectedCustomer.phoneNumbers[1]) {
+                                {{ ' - ' }}
+                                {{ selectedCustomer.phoneNumbers[1] | phoneNumber }}
+                            }
+                    </span>
+                    </div>
+                    <div *ngIf="selectedCustomer.stateRegistration" class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-file text-xl text-primary" pTooltip="Inscrição Estadual"
+                           tooltipPosition="top"></i>
+                        <span class="text-md">{{ selectedCustomer.stateRegistration | ie }}</span>
+                    </div>
+                </div>
+
+                <div class="col-12 lg:col-6 mb-4">
+                    <h2 class="text-lg font-semibold text-primary mb-3">Endereço</h2>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-map-marker text-xl text-primary" pTooltip="Rua e Número"
+                           tooltipPosition="top"></i>
+                        <span class="text-md">
+                            {{ selectedCustomer.address.street }}, {{ selectedCustomer.address.number }}
+                            {{ selectedCustomer.address.complement ? ' - ' + selectedCustomer.address.complement : '' }}
+                        </span>
+                    </div>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-building text-xl text-primary" pTooltip="Bairro e Cidade"
+                           tooltipPosition="top"></i>
+                        <span class="text-md">
+                        {{ selectedCustomer.address.neighborhood }}, {{ selectedCustomer.address.city }}
+                            - {{ selectedCustomer.address.state }}
+                    </span>
+                    </div>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-envelope text-xl text-primary" pTooltip="CEP" tooltipPosition="top"></i>
+                        <span class="text-md">CEP: {{ selectedCustomer.address.postalCode | cep }}</span>
+                    </div>
+                    <div class="flex align-items-center gap-3 w-full mb-3">
+                        <i class="pi pi-globe text-xl text-primary" pTooltip="País" tooltipPosition="top"></i>
+                        <span class="text-md">{{ selectedCustomer.address.country }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-semibold text-primary mb-3">Histórico de Contatos</h2>
+            @if (contactList.length > 0) {
+                <p-accordion>
+                    <ng-container *ngFor="let contact of contactList | orderBy:'-contactDate'">
+                        <p-accordionTab
+                            [header]="contact.seller + ' (' + contact.customerStatus + ') - ' + (contact.contactDate | date: 'dd/MM/yyyy - HH:mm:ss')">
+                            <div class="grid gap-1 p-3">
+                                <div class="col-12">
+                                    <label class="font-semibold block mb-2">Vendedor:</label>
+                                    <p class="w-100"> {{ contact.seller }}</p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="font-semibold block mb-2">Tipo do Contato:</label>
+                                    <p class="w-100"> {{ contact.info.contactType }}</p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="font-semibold block mb-2">Endereço do Contato:</label>
+                                    <p class="w-100 overflow-hidden">
+                                        {{ containsLetters(contact.info.value) ? contact.info.value : (contact.info.value | phoneNumber) }}
+                                    </p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="font-semibold block mb-2">Novo Status:</label>
+                                    <p class="w-100"> {{ contact.customerStatus }}</p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="font-semibold block mb-2">Observações:</label>
+                                    <textarea pInputTextarea
+                                              [(ngModel)]="contact.notes"
+                                              [autoResize]="true"
+                                              class="w-full p-inputtextarea"
+                                              style="min-height: 6rem;"
+                                              readonly>
+                                    </textarea>
+                                </div>
+                            </div>
+                        </p-accordionTab>
+                    </ng-container>
+                </p-accordion>
+            } @else {
+                <p>Sem contatos realizados</p>
+            }
+        </div>
+    </p-dialog>
+}
+
 <p-dialog header="Registrar Contato"
           [(visible)]="contactDialog"
           [modal]="true"
@@ -177,7 +306,18 @@
                           style="min-height: 150px; max-height: 150px"
                           required
                           placeholder="Digite a observação do contato.">
-                    </textarea>
+                </textarea>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="p-field-checkbox">
+                <p-checkbox
+                    id="unproductiveContact"
+                    label="Contato improdutivo"
+                    [binary]="true"
+                    [(ngModel)]="isUnproductive">
+                </p-checkbox>
             </div>
         </div>
     </div>
@@ -185,6 +325,320 @@
         <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
                 (click)="closeDialog(CustomerStatus.CONTACT)"></button>
         <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
-                (click)="saveContact()"></button> <!-- [disabled]="customerForm.invalid" -->
+                (click)="saveContact()"></button>
+    </p-footer>
+</p-dialog>
+
+<p-dialog header="Apresentação de Produtos"
+          [visible]="presentationDialog"
+          [modal]="true"
+          [style]="{width: '70vw'}"
+          [breakpoints]="{ '1649px': '85vw', '1024px': '90vw', '767px': '100vw' }"
+          [draggable]="false"
+          [maximizable]="true"
+          (onHide)="closeDialog(CustomerStatus.PRESENTATION)">
+    <p-stepper [(activeStep)]="active" [linear]="true" orientation="horizontal" class="p-component p-stepper">
+        <p-stepperPanel>
+            <ng-template pTemplate="header" let-onClick="onClick" let-index="index">
+                <button class="bg-transparent border-none inline-flex flex-column gap-2" (click)="onClick.emit()">
+                    <span
+                        pTooltip="Orçamento"
+                        class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
+                        [ngClass]="{
+                            'bg-primary border-primary': index <= active,
+                            'surface-border': index > active
+                        }"
+                    >
+                        <i class="pi pi-shopping-cart"></i>
+                    </span>
+                </button>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="grid p-fluid p-2">
+                    <div class="col-12">
+                        <div class="p-field">
+                            <label for="presentationCustomer">Cliente</label>
+                            <input id="presentationCustomer" type="text" pInputText [(ngModel)]="selectedCustomer.name"
+                                   disabled/>
+                        </div>
+                    </div>
+                    <div class="col-12 overflow-hidden">
+                        <p-pickList
+                            [source]="products"
+                            [target]="selectedProducts"
+                            [dragdrop]="true"
+                            [responsive]="true"
+                            [sourceStyle]="{ height: '30rem', width: '100%' }"
+                            [targetStyle]="{ height: '30rem', width: '100%' }"
+                            breakpoint="1366px"
+                            [filterBy]="'name,categoryName'"
+                            sourceHeader="Lista de Produtos"
+                            [targetHeader]="'Produtos Selecionados. Total: R$ ' + (sumQuotationValue() | number: '1.2-2')"
+                            [showSourceControls]="false"
+                            [showTargetControls]="false"
+                            (onMoveToTarget)="addItemToQuotation($event)"
+                            (onMoveAllToTarget)="addItemToQuotation($event)"
+                            (onMoveToSource)="onProductsRemoved($event)"
+                            (onMoveAllToSource)="onProductsRemoved($event)"
+                        >
+                            <ng-template let-product pTemplate="item">
+                                <div class="col-12 flex justify-between align-items-center w-full grid">
+                                    <div [ngClass]="{
+                                            'md:col-8': !containsItem(product),
+                                            'md:col-5': containsItem(product)
+                                        }">
+                                        <div
+                                            class="font-bold text-ellipsis flex-wrap overflow-hidden">{{ product.name }}
+                                        </div>
+                                        <div class="text-sm text-secondary flex align-items-center">
+                                            <i class="pi pi-tags mr-1"></i>
+                                            <span
+                                                class="text-ellipsis flex-wrap overflow-hidden">{{ product.categoryName }}</span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="containsItem(product)"
+                                         class="flex align-items-center col-12 md:col-4 mt-2 md:mt-0">
+                                        <p-inputNumber
+                                            [(ngModel)]="findProduct(product).quantity"
+                                            [min]="1"
+                                            [mode]="'decimal'"
+                                            [step]="1"
+                                            [showButtons]="true"
+                                            (onInput)="changeItemQuantity(product, $event)"
+                                        >
+                                        </p-inputNumber>
+                                    </div>
+                                    <div
+                                        class="col-12 no-wrap font-bold text-center md:text-right md:text-sm mt-2 md:mt-0"
+                                        [ngClass]="{
+                                            'md:col-4': !containsItem(product),
+                                            'md:col-3': containsItem(product)
+                                        }">
+                                        <p-tag severity="success">R$ {{ product.price | number: '1.2-2' }}</p-tag>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-pickList>
+                    </div>
+                </div>
+            </ng-template>
+        </p-stepperPanel>
+        <p-stepperPanel>
+            <ng-template pTemplate="header" let-onClick="onClick" let-index="index">
+                <button class="bg-transparent border-none inline-flex flex-column gap-2" (click)="onClick.emit()">
+                    <span
+                        pTooltip="Dados do contato"
+                        class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
+                        [ngClass]="{
+                            'bg-primary border-primary': index <= active,
+                            'surface-border': index > active
+                        }"
+                    >
+                        <i class="pi pi-pencil"></i>
+                    </span>
+                </button>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="grid p-fluid p-2">
+                    <div class="col-12">
+                        <div class="p-field">
+                            <label for="newContactCustomer1">Cliente</label>
+                            <input id="newContactCustomer1" type="text" pInputText [(ngModel)]="selectedCustomer.name"
+                                   disabled/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 lg:col-6">
+                        <div class="p-field">
+                            <label for="category1">Tipo de Contato</label>
+                            <p-dropdown
+                                id="category1"
+                                name="Categoria"
+                                [appendTo]="'body'"
+                                [options]="contactTypes"
+                                (onChange)="
+                                    contact.info.contactType = $event.value.value;
+                                    updateContactOptions();
+                                    contact.info.value = null;"
+                                optionLabel="label"
+                                placeholder="Selecione uma categoria"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 lg:col-6">
+                        <div class="p-field">
+                            <label for="contactAddress1">Endereço de Contato</label>
+                            <p-dropdown
+                                id="contactAddress1"
+                                name="Endereço de Contato"
+                                [appendTo]="'body'"
+                                [options]="contactOptions"
+                                optionLabel="label"
+                                [(ngModel)]="contact.info.value"
+                                (onChange)="contact.info.value = $event.value.value;"
+                                [editable]="true">
+                            </p-dropdown>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="p-field">
+                            <label for="notes1">Observações</label>
+                            <textarea pInputTextarea
+                                      name="Descrição"
+                                      id="notes1"
+                                      [(ngModel)]="contact.notes"
+                                      [autoResize]="true"
+                                      class="overflow-auto"
+                                      style="min-height: 150px; max-height: 150px"
+                                      required
+                                      placeholder="Digite a observação do contato.">
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="p-field-checkbox">
+                            <p-checkbox
+                                id="unproductiveContact1"
+                                label="Contato improdutivo"
+                                [binary]="true"
+                                [(ngModel)]="isUnproductive">
+                            </p-checkbox>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-stepperPanel>
+        <p-stepperPanel>
+            <ng-template pTemplate="header" let-onClick="onClick" let-index="index">
+                <button class="bg-transparent border-none inline-flex flex-column gap-2" (click)="onClick.emit()">
+            <span
+                pTooltip="Finalização"
+                class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
+                [ngClass]="{
+                    'bg-primary border-primary': index <= active,
+                    'surface-border': index > active
+                }"
+            >
+                <i class="pi pi-check"></i>
+            </span>
+                </button>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="p-fluid grid p-2">
+                    <div class="col-12">
+                        <h3>Resumo do Orçamento</h3>
+                    </div>
+                    <p-table
+                        #dt
+                        [tableStyle]="{'min-width': '60vw'}"
+                        [value]="selectedProducts"
+                        [scrollable]="true"
+                        scrollHeight="800px"
+                        [rows]="10"
+                        [globalFilterFields]="['name']"
+                        [paginator]="true"
+                        class="w-full">
+                        <ng-template pTemplate="caption">
+                            <h4>Produtos Selecionados</h4>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>
+                                    <p-iconField iconPosition="left" class="ml-auto">
+                                        <p-inputIcon>
+                                            <i class="pi pi-search"></i>
+                                        </p-inputIcon>
+                                        <input
+                                            pInputText
+                                            type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Procure o produto" />
+                                    </p-iconField>
+                                </th>
+                                <th class="text-center">Quantidade</th>
+                                <th>Preço</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-product let-i="rowIndex">
+                            <tr>
+                                <td class="col-8">
+                                    <span class="font-medium text-lg">{{ product.name }}</span>
+                                </td>
+                                <td class="col-2 text-center">
+                                    <span class="text-md">{{ findProduct(product).quantity }}</span>
+                                </td>
+                                <td class="col-2 text-left">
+                                    R$ {{ product.price | number: '1.2-2' }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="footer">
+                            <tr>
+                                <td colspan="3" class="font-bold text-right text-xl">
+                                    Total: R$ {{ sumQuotationValue() | number: '1.2-2' }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+                    <div class="col-12">
+                        <h4>Dados do Cliente</h4>
+                        <p><strong>Nome:</strong> {{ selectedCustomer.name }}</p>
+                        <p class="text-left"><strong>E-mail:</strong> {{ selectedCustomer.email }}</p>
+                        <p class="text-left"><strong>Telefone(s):</strong> {{ selectedCustomer.phoneNumbers[0] | phoneNumber }}
+                            @if (selectedCustomer.phoneNumbers[1]) {
+                                {{ ' - ' }}
+                                {{ selectedCustomer.phoneNumbers[1] | phoneNumber }}
+                            }
+                        </p>
+                        <p><strong>Endereço:</strong> {{
+                                (selectedCustomer.address.street) + ", "
+                                + (selectedCustomer.address.number) + " - "
+                                + (selectedCustomer.address.neighborhood) + ", "
+                                + (selectedCustomer.address.city) + " - "
+                                + (selectedCustomer.address.state) + ", "
+                                + (selectedCustomer.address.country)
+                        }}</p>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="mb-2 flex align-items-center gap-2">
+                            <h4 class="m-0">Dados do Contato</h4>
+                            <p-tag
+                                [severity]="isUnproductive ? 'danger' : 'success'"
+                                class="font-bold">
+                                {{ isUnproductive ? 'Contato Improdutivo' : 'Contato Produtivo' }}
+                            </p-tag>
+                        </div>
+                        <p><strong>Tipo de Contato:</strong> {{ contact.info.contactType }}</p>
+                        <p><strong>Endereço de Contato:</strong> {{ contact.info.value }}</p>
+                        <p><strong>Observações:</strong></p>
+                        <textarea pInputTextarea
+                                  name="Descrição"
+                                  [(ngModel)]="contact.notes"
+                                  [autoResize]="true"
+                                  class="overflow-auto"
+                                  style="min-height: 150px; height: 100%"
+                                  readonly>
+                        </textarea>
+                    </div>
+                </div>
+            </ng-template>
+        </p-stepperPanel>
+    </p-stepper>
+    <p-footer>
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                (click)="closeDialog(CustomerStatus.PRESENTATION)"></button>
+        <button pButton label="Anterior" icon="pi pi-chevron-left"
+                [disabled]="active === 0"
+                (click)="active = active - 1"></button>
+        <button pButton label="Próximo" icon="pi pi-chevron-right"
+                [disabled]="active === 2"
+                (click)="active = active + 1"></button>
+        <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
+                [disabled]="active !== 2"
+                (click)="savePresentation()"></button>
     </p-footer>
 </p-dialog>

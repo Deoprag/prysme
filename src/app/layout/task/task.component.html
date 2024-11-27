@@ -18,7 +18,7 @@
                 ></p-calendar>
             </div>
         </div>
-        <div class="sm:col-8 surface-ground text-center border-round-xl" style="height: 49rem;">
+        <div class="sm:col-8 surface-ground text-center border-round-xl" style="height: 70vh;">
             <div *ngIf="tasks && tasks.length > 0; else noTasks">
                 <p-table [paginator]="true"
                          [scrollable]="true"
@@ -59,7 +59,9 @@
                                 <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-pencil" (click)="showDialog(task)"
                                         class="p-button-sm p-button-info mr-2"></button>
                                 <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-trash" (click)="confirmDeleteTask(task)"
-                                        class="p-button-sm p-button-danger"></button>
+                                        class="p-button-sm p-button-danger mr-2"></button>
+                                <button pButton icon="pi pi-eye" (click)="showTask(task)"
+                                        class="p-button-sm p-button-primary"></button>
                             </td>
                         </tr>
                     </ng-template>
@@ -75,17 +77,18 @@
     </div>
 </div>
 
-<p-dialog header="Registrar Tarefa"
+<p-dialog [header]="isViewing ? 'Tarefa' : 'Registrar Tarefa'"
           [(visible)]="taskDialog"
           [modal]="true"
           [style]="{width: '40vw'}"
+          (onHide)="closeDialog()"
           [breakpoints]="{ '1379px': '50vw', '767px': '60vw' }"
           [draggable]="false">
     <div class="grid p-fluid p-2">
         <div class="col-12">
             <div class="p-field">
                 <label for="newContactCustomer">Título</label>
-                <input id="newContactCustomer" type="text" pInputText [(ngModel)]="task.title"/>
+                <input id="newContactCustomer" type="text" pInputText [(ngModel)]="task.title" [readOnly]="isViewing"/>
             </div>
         </div>
         <div class="col-12">
@@ -96,6 +99,7 @@
                           id="notes"
                           [(ngModel)]="task.description"
                           [autoResize]="true"
+                          [readOnly]="isViewing"
                           class="overflow-auto"
                           style="min-height: 150px; max-height: 150px"
                           required
@@ -105,9 +109,11 @@
         </div>
     </div>
     <p-footer>
-        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
-                (click)="closeDialog()"></button>
-        <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
-                (click)="saveTask(task)"></button> <!-- [disabled]="customerForm.invalid" -->
+        @if (!isViewing) {
+            <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                    (click)="closeDialog()"></button>
+            <button pButton label="Salvar" icon="pi pi-check" class="p-button-success"
+                    (click)="saveTask(task)"></button> <!-- [disabled]="customerForm.invalid" -->
+        }
     </p-footer>
 </p-dialog>

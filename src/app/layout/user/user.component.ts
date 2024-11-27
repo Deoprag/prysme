@@ -207,7 +207,6 @@ export class UserComponent implements OnInit {
 
     createUser() {
         this.spinner = true;
-        this.user.createdBy = this.authService.getUsername();
         this.userService.create(this.user).subscribe({
             next: () => {
                 this.spinner = false;
@@ -243,7 +242,6 @@ export class UserComponent implements OnInit {
 
     updateUser() {
         this.spinner = true;
-        this.user.lastModifiedBy = this.authService.getUsername();
         this.userService.update(this.user).subscribe({
             next: () => {
                 this.spinner = false;

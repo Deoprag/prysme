@@ -15,6 +15,10 @@ export class ContactService {
         return this.http.get<Contact[]>(this.baseUrl);
     }
 
+    findAllByCustomerId(customerId: number): Observable<Contact[]> {
+        return this.http.get<Contact[]>(`${this.baseUrl}/findAllByCustomerId/${customerId}`);
+    }
+
     findById(id: number): Observable<Contact> {
         return this.http.get<Contact>(`${this.baseUrl}/${id}`);
     }

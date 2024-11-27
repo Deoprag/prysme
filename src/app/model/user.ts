@@ -19,6 +19,4 @@ export class User {
     permissions!: string[];
     createdDate: Date;
     lastModifiedDate: Date;
-    createdBy!: string;
-    lastModifiedBy!: string;
 }
