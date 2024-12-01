@@ -43,7 +43,7 @@
                         <tr>
                             <th class="p-3 text-left">Título</th>
                             <th class="p-3 text-left">Descrição</th>
-                            <th class="p-3 text-center">Ações</th>
+                            <th></th>
                         </tr>
                     </ng-template>
 
@@ -55,13 +55,13 @@
                             <td class="p-3 text-left">
                                 <span>{{ truncateText(task.description, 60) }}</span>
                             </td>
-                            <td class="p-3 text-center">
-                                <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-pencil" (click)="showDialog(task)"
-                                        class="p-button-sm p-button-info mr-2"></button>
-                                <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-trash" (click)="confirmDeleteTask(task)"
-                                        class="p-button-sm p-button-danger mr-2"></button>
+                            <td class="p-3 flex justify-content-end gap-2">
                                 <button pButton icon="pi pi-eye" (click)="showTask(task)"
                                         class="p-button-sm p-button-primary"></button>
+                                <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-pencil" (click)="showDialog(task)"
+                                        class="p-button-sm p-button-info"></button>
+                                <button *ngIf="isTaskEditable(task.dueDate)" pButton icon="pi pi-trash" (click)="confirmDeleteTask(task)"
+                                        class="p-button-sm p-button-danger"></button>
                             </td>
                         </tr>
                     </ng-template>

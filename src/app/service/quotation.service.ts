@@ -15,6 +15,10 @@ export class QuotationService {
         return this.http.get<Quotation[]>(this.baseUrl);
     }
 
+    findAllByCustomerId(id: number): Observable<Quotation> {
+        return this.http.get<Quotation>(`${this.baseUrl}/findAllByCustomerId/${id}`);
+    }
+
     findById(id: number): Observable<Quotation> {
         return this.http.get<Quotation>(`${this.baseUrl}/${id}`);
     }

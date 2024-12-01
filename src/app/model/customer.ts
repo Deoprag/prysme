@@ -13,6 +13,7 @@ export class Customer {
     phoneNumbers: string[] = [];
     address: Address = new Address();
     seller: string;
+    sellerId: number;
     createdDate: Date;
     lastModifiedDate: Date;
     createdBy!: string;

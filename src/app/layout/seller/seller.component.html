@@ -10,10 +10,8 @@
             <div class="p-mt-4 flex justify-content-between gap-2">
                 <div class="p-2 flex gap-2">
                 </div>
-                <div class="text-4xl">Usuários</div>
+                <div class="text-4xl">Vendedores</div>
                 <div class="p-2 flex gap-2">
-                    <button pButton icon="pi pi-plus" class="p-button-success p-mr-2"
-                            (click)="userDialog = true"></button>
                 </div>
             </div>
         </ng-template>
@@ -22,7 +20,6 @@
                 <th class="font-semibold">Nome de Usuário</th>
                 <th class="font-semibold">Nome</th>
                 <th class="font-semibold">Email</th>
-                <th class="font-semibold">Equipe</th>
                 <th class="font-semibold">Data Atualização</th>
                 <th class="font-semibold text-center">Status</th>
                 <th></th>
@@ -33,7 +30,6 @@
                 <td>{{ auxUser.username }}</td>
                 <td>{{ auxUser.firstName }} {{ auxUser.lastName }}</td>
                 <td>{{ auxUser.email }}</td>
-                <td>{{ auxUser.team }}</td>
                 <td>{{ auxUser.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
                 <td class="text-center" [ngClass]="{
                       'text-green-300 font-semibold': auxUser.enabled,
@@ -46,19 +42,16 @@
                 </td>
                 <td>
                     <div class="flex gap-2 justify-content-end">
-                        <button class="p-button-info p-button-contrast" pButton icon="pi pi-key"
+                        <button class="p-button-contrast p-button-raised" pButton icon="pi pi-key"
                                 (click)="resetPasswordDialog = true; user = auxUser"></button>
                         <button class="p-button-info p-button-raised" pButton icon="pi pi-pencil"
                                 (click)="editUser(auxUser)"></button>
-                        <button class="p-button-danger p-button-raised" pButton icon="pi pi-trash"
-                                (click)="confirmDeleteUser(auxUser)"></button>
                     </div>
                 </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
-
 
 <p-dialog
     [(visible)]="resetPasswordDialog"
@@ -110,7 +103,7 @@
 </p-dialog>
 
 <form #userForm="ngForm" name="userForm">
-    <p-dialog header="Novo Usuário"
+    <p-dialog header="Editar Dados"
               [(visible)]="userDialog"
               [modal]="true"
               [style]="{width: '55vw'}"
@@ -148,25 +141,6 @@
                            #email="ngModel"
                            [ngClass]="{'ng-invalid': email.invalid && email.touched}"/>
                     <p-messages severity="error" class="text-red-300 ml-2" *ngIf="email.invalid && email.touched" [textContent]="'Email é obrigatório'"></p-messages>
-                </div>
-            </div>
-
-            <div class="col-12 lg:col-4">
-                <div class="p-field">
-                    <label for="team">Equipe</label>
-                    <p-dropdown
-                        [options]="teams"
-                        optionLabel="name"
-                        placeholder="Selecione a equipe"
-                        name="team"
-                        id="team"
-                        [(ngModel)]="selectedTeam"
-                        (ngModelChange)="onTeamChange()"
-                        required
-                        #team="ngModel"
-                        [ngClass]="{'ng-invalid': team.invalid && team.touched}">
-                    </p-dropdown>
-                    <p-messages severity="error" class="text-red-300 ml-2" *ngIf="team.invalid && team.touched" [textContent]="'Equipe é obrigatória'"></p-messages>
                 </div>
             </div>
 
@@ -218,7 +192,7 @@
                 </div>
             </div>
 
-            <div class="col-12 lg:col-2">
+            <div class="col-12 lg:col-4">
                 <div class="p-field">
                     <label for="gender">Gênero</label>
                     <p-dropdown
@@ -238,38 +212,23 @@
                 </div>
             </div>
 
-            <div class="col-12 lg:col-3">
+            <div class="col-12 lg:col-4">
                 <div class="p-field">
                     <label for="phoneNumber">Telefone</label>
                     <p-inputMask
-                           name="phoneNumber"
-                           id="phoneNumber"
-                           [(ngModel)]="user.phoneNumber"
-                           required
-                           mask="(99) 99999-999?9"
-                           placeholder="Digite o telefone"
-                           #phoneNumber="ngModel"
-                           [ngClass]="{'ng-invalid': phoneNumber.invalid && phoneNumber.touched}"/>
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        [(ngModel)]="user.phoneNumber"
+                        required
+                        mask="(99) 99999-999?9"
+                        placeholder="Digite o telefone"
+                        #phoneNumber="ngModel"
+                        [ngClass]="{'ng-invalid': phoneNumber.invalid && phoneNumber.touched}"/>
                     <p-messages severity="error" class="text-red-300 ml-2" *ngIf="phoneNumber.invalid && phoneNumber.touched" [textContent]="'Telefone é obrigatório'"></p-messages>
                 </div>
             </div>
 
-            <div class="col-12 lg:col-3">
-                <div class="p-field">
-                    <label for="permissions">Permissões</label>
-                    <p-multiSelect
-                        name="permissions"
-                        id="permissions"
-                        [options]="permissions"
-                        [(ngModel)]="selectedPermissions"
-                        optionLabel="description"
-                        [appendTo]="'body'"
-                        placeholder="Selecione as permissões"
-                        (ngModelChange)="onPermissionsChange()" />
-                </div>
-            </div>
-
-            <div class="col-12 md:col-4 flex flex-row align-content-center justify-content-around mt-3">
+            <div class="col-12 md:col-8 flex flex-row align-content-center justify-content-start mt-3">
                 <div class="flex align-items-center">
                     <p-radioButton
                         name="active"

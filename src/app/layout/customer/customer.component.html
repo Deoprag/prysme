@@ -9,8 +9,11 @@
         <ng-template pTemplate="caption">
             <div class="p-mt-4 flex justify-content-between gap-2">
                 <div class="p-2 flex gap-2">
-                    <button pButton icon="pi pi-print" class="p-button-help p-mr-2"
-                            (click)="true"></button>
+                    <p-button
+                        severity="help"
+                        icon="pi pi-external-link"
+                        label="Exportar"
+                        (onClick)="exportCSV()"/>
                 </div>
                 <div class="text-4xl">Clientes</div>
                 <div class="p-2 flex gap-2">
@@ -21,41 +24,100 @@
         </ng-template>
         <ng-template pTemplate="header">
             <tr>
+                <th pSortableColumn="cpfCnpj" class="font-semibold">
+                    CPF/CNPJ
+                    <p-sortIcon field="cpfCnpj"/>
+                </th>
+                <th pSortableColumn="name" class="font-semibold">
+                    Nome
+                    <p-sortIcon field="name"/>
+                </th>
+                <th pSortableColumn="email" class="font-semibold">
+                    Email
+                    <p-sortIcon field="email"/>
+                </th>
+                <th pSortableColumn="seller" class="font-semibold text-center">
+                    Vendedor
+                    <p-sortIcon field="seller"/>
+                </th>
+                <th pSortableColumn="customerStatus" class="font-semibold text-center">
+                    Status
+                    <p-sortIcon field="customerStatus"/>
+                </th>
                 <th></th>
-                <th class="font-semibold">CPF/CNPJ</th>
-                <th class="font-semibold">Nome</th>
-                <th class="font-semibold">Email</th>
-                <th class="font-semibold text-center">Alterado Por</th>
-                <th class="font-semibold">Data Atualização</th>
-                <th class="font-semibold text-center">Status</th>
+            </tr>
+            <tr>
+                <th>
+                    <p-columnFilter field="cpfCnpj" type="text" placeholder="CPF/CNPJ"/>
+                </th>
+                <th>
+                    <p-columnFilter field="name" type="text" placeholder="Nome"/>
+                </th>
+                <th>
+                    <p-columnFilter field="email" type="text" placeholder="Email"/>
+                </th>
+                <th>
+                    <p-columnFilter field="seller" matchMode="in" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-multiSelect
+                                [ngModel]="value"
+                                [options]="sellers"
+                                placeholder="Selecione um ou mais"
+                                appendTo="body"
+                                (onChange)="filter($event.value)">
+                                <ng-template let-option pTemplate="item">
+                                    <div class="inline-block vertical-align-middle">
+                                        <span class="ml-1 mt-1">{{ option }}</span>
+                                    </div>
+                                </ng-template>
+                            </p-multiSelect>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="customerStatus" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown
+                                [ngModel]="value"
+                                [options]="customerStatusOptions"
+                                (onChange)="filter($event.value)"
+                                appendTo="body"
+                                placeholder="Selecione um"
+                                [showClear]="true">
+                                <ng-template let-option pTemplate="item">
+                                    <p-tag
+                                        [value]="option.label.toUpperCase()"
+                                        [severity]="option.value === 'NEW' ? 'success' : option.value === 'LOST' ? 'danger' : 'primary'"/>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-customer>
             <tr>
+                <td>{{ formatCpfCnpj(customer.cpfCnpj) }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.email }}</td>
+                <td class="text-center">
+                    <p-tag severity="warning" value="{{ customer.seller }}"/>
+                </td>
+                <td class="text-center" [ngClass]="{
+                  'text-green-300 font-semibold': customer.customerStatus === 'NEW',
+                  'text-red-300': customer.customerStatus === 'LOST'}">
+                    <p-tag
+                        [severity]="customer.customerStatus === CustomerStatus.NEW ? 'success'
+                    : customer.customerStatus === CustomerStatus.LOST ? 'danger'
+                    : 'primary'"
+                        value="{{ findStatusOption(customer.customerStatus).label.toUpperCase() }}"/>
+                </td>
                 <td>
                     <div class="flex gap-2">
                         <button class="p p-button-info p-button-raised" pButton icon="pi pi-pencil"
                                 (click)="editCustomer(customer)"></button>
-<!--                        <button class="p p-button-danger p-button-raised" pButton icon="pi pi-trash"-->
-<!--                                (click)="confirmDeleteCustomer(customer)"></button>-->
                     </div>
-                </td>
-                <td>{{ formatCpfCnpj(customer.cpfCnpj) }}</td>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.email }}</td>
-                <td class="text-center"><p-tag
-                    severity="warning"
-                    value="{{ customer.lastModifiedBy }}"/>
-                </td>
-                <td>{{ customer.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
-                <td class="text-center" [ngClass]="{
-                      'text-green-300 font-semibold': customer.customerStatus === 'NEW',
-                      'text-red-300': customer.customerStatus === 'LOST'}">
-                    <p-tag
-                        [severity]="customer.customerStatus === CustomerStatus.NEW ? 'success'
-                        : customer.customerStatus === CustomerStatus.LOST ? 'danger'
-                        : 'primary'"
-                        value="{{ customer.customerStatus }}"/>
                 </td>
             </tr>
         </ng-template>
@@ -284,6 +346,19 @@
                                required
                                placeholder="Digite o país"/>
                     </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="seller">Vendedor</label>
+                    <p-dropdown
+                        id="seller"
+                        (onChange)="customer.sellerId = $event.value"
+                        appendTo="body"
+                        [options]="sellers"
+                        optionLabel="username"
+                        optionValue="id"
+                        placeholder="Selecione um vendedor">
+                    </p-dropdown>
                 </div>
             </div>
             <p-footer>

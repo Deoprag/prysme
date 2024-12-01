@@ -26,6 +26,10 @@ import {MessagesModule} from "primeng/messages";
 import {InputGroupAddonModule} from "primeng/inputgroupaddon";
 import {AuthService} from "../../auth/auth.service";
 import {CustomerStatus} from "../../model/customer-status";
+import {MultiSelectModule} from "primeng/multiselect";
+import {UtilsService} from "../../service/utils.service";
+import {User} from "../../model/user";
+import {UserService} from "../../service/user.service";
 
 @Component({
     templateUrl: './customer.component.html',
@@ -55,7 +59,8 @@ import {CustomerStatus} from "../../model/customer-status";
         NgClass,
         MessagesModule,
         InputGroupAddonModule,
-        JsonPipe
+        JsonPipe,
+        MultiSelectModule
     ],
     providers: [MessageService, ConfirmationService],
     standalone: true
@@ -65,13 +70,17 @@ export class CustomerComponent implements OnInit {
     spinner: boolean = false;
 
     customers: Customer[];
+    statusOptions: any = CustomerStatus.getOptions();
     customer: Customer = new Customer();
+    sellers: User[] = [];
 
     constructor(
         private customerService: CustomerService,
         private authService: AuthService,
         private postalCodeService: PostalCodeService,
         private confirmationService: ConfirmationService,
+        private utilsService: UtilsService,
+        private userService: UserService,
         private messageService: MessageService,
     ) {
     }
@@ -96,6 +105,18 @@ export class CustomerComponent implements OnInit {
                 });
             }
         });
+        this.userService.findAllByTeamId(Number.parseInt(localStorage.getItem('userId'))).subscribe({
+            next: (data: any) => {
+                this.sellers = data;
+            },
+            error (error: any) {
+
+            }
+        })
+    }
+
+    findStatusOption(customerStatus: CustomerStatus): any {
+        return this.statusOptions.find((option: any) => option.value === customerStatus);
     }
 
     saveCustomer() {
@@ -106,6 +127,10 @@ export class CustomerComponent implements OnInit {
         this.customer = {...customer};
         console.log(this.customer.birthFoundationDate instanceof Date);  // Deve retornar true
         this.customerDialog = true;
+    }
+
+    exportCSV() {
+        this.utilsService.exportToCSV(this.customers, 'Customer');
     }
 
     confirmDeleteCustomer(customer: Customer) {
@@ -148,7 +173,6 @@ export class CustomerComponent implements OnInit {
 
     createCustomer() {
         this.spinner = true;
-        this.customer.seller = this.authService.getUsername();
         this.customerService.create(this.customer).subscribe({
             next: () => {
                 this.spinner = false;
@@ -176,7 +200,6 @@ export class CustomerComponent implements OnInit {
 
     updateCustomer() {
         this.spinner = true;
-        this.customer.seller = this.authService.getUsername();
         this.customerService.update(this.customer).subscribe({
             next: () => {
                 this.spinner = false;

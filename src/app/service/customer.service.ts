@@ -19,6 +19,14 @@ export class CustomerService {
         return this.http.get<Customer>(`${this.baseUrl}/${id}`);
     }
 
+    findAllBySellerId(id: number): Observable<Customer[]> {
+        return this.http.get<Customer[]>(`${this.baseUrl}/findAllBySellerId/${id}`);
+    }
+
+    removeFromWallet(id: number): Observable<Customer> {
+        return this.http.get<Customer>(`${this.baseUrl}/removeFromWallet/${id}`);
+    }
+
     create(customer: Customer): Observable<Customer> {
         return this.http.post<Customer>(`${this.baseUrl}/create`, customer);
     }

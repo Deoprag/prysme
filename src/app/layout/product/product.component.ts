@@ -28,6 +28,7 @@ import {ProductCategory} from "../../model/product-category";
 import {ProductCategoryService} from "../../service/product-category.service";
 import {RadioButtonModule} from "primeng/radiobutton";
 import {SelectButtonModule} from "primeng/selectbutton";
+import {UtilsService} from "../../service/utils.service";
 
 @Component({
     selector: 'product',
@@ -77,12 +78,17 @@ export class ProductComponent implements OnInit {
         private productService: ProductService,
         private productCategoryService: ProductCategoryService,
         private confirmationService: ConfirmationService,
+        private utilsService: UtilsService,
         private messageService: MessageService,
     ) {
     }
 
     ngOnInit() {
         this.refresh();
+    }
+
+    exportCSV() {
+        this.utilsService.exportToCSV(this.products, 'Produtos');
     }
 
     refresh() {

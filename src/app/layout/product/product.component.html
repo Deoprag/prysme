@@ -9,8 +9,11 @@
         <ng-template pTemplate="caption">
             <div class="p-mt-4 flex justify-content-between gap-2">
                 <div class="p-2 flex gap-2">
-                    <button pButton icon="pi pi-print" class="p-button-help p-mr-2"
-                            (click)="true"></button>
+                    <p-button
+                        severity="help"
+                        icon="pi pi-external-link"
+                        label="Exportar"
+                        (onClick)="exportCSV()"/>
                 </div>
                 <div class="text-4xl">Produtos</div>
                 <div class="p-2 flex gap-2">
@@ -21,37 +24,85 @@
         </ng-template>
         <ng-template pTemplate="header">
             <tr>
+                <th pSortableColumn="name" class="font-semibold">
+                    Nome
+                    <p-sortIcon field="name"/>
+                </th>
+                <th pSortableColumn="categoryName" class="font-semibold">
+                    Categoria
+                    <p-sortIcon field="categoryName"/>
+                </th>
+                <th pSortableColumn="lastModifiedBy" class="font-semibold text-center">
+                    Alterado Por
+                    <p-sortIcon field="lastModifiedBy"/>
+                </th>
+                <th pSortableColumn="lastModifiedDate" class="font-semibold">
+                    Data Atualização
+                    <p-sortIcon field="lastModifiedDate"/>
+                </th>
+                <th pSortableColumn="active" class="font-semibold text-center">
+                    Status
+                    <p-sortIcon field="active"/>
+                </th>
                 <th></th>
-                <th class="font-semibold">Nome</th>
-                <th class="font-semibold">Categoria</th>
-                <th class="font-semibold text-center">Alterado Por</th>
-                <th class="font-semibold">Data Atualização</th>
-                <th class="font-semibold text-center">Status</th>
+            </tr>
+            <tr>
+                <th>
+                    <p-columnFilter field="name" type="text" placeholder="Nome"/>
+                </th>
+                <th>
+                    <p-columnFilter field="categoryName" type="text" placeholder="Categoria"/>
+                </th>
+                <th>
+                    <p-columnFilter field="lastModifiedBy" type="text" placeholder="Alterado Por"/>
+                </th>
+                <th>
+                    <p-columnFilter field="lastModifiedDate" type="date" placeholder="Data Atualização"/>
+                </th>
+                <th>
+                    <p-columnFilter field="active" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown
+                                [ngModel]="value"
+                                [options]="statusOptions"
+                                (onChange)="filter($event.value)"
+                                appendTo="body"
+                                placeholder="Selecione um"
+                                [showClear]="true">
+                                <ng-template let-option pTemplate="item">
+                                    <p-tag
+                                        [value]="option.label"
+                                        [severity]="option.value ? 'success' : 'danger'"/>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-product>
             <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.categoryName }}</td>
+                <td class="text-center">
+                    <p-tag severity="warning" value="{{ product.lastModifiedBy }}"/>
+                </td>
+                <td>{{ product.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
+                <td class="text-center" [ngClass]="{
+                  'text-green-300 font-semibold': product.active,
+                  'text-red-300': !product.active}">
+                    <p-tag
+                        [severity]="product.active ? 'success' : 'danger'"
+                        value="{{ product.active ? 'Ativo' : 'Inativo' }}"/>
+                </td>
                 <td>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 justify-content-end">
                         <button class="p p-button-info p-button-raised" pButton icon="pi pi-pencil"
                                 (click)="editProduct(product)"></button>
                         <button class="p p-button-danger p-button-raised" pButton icon="pi pi-trash"
                                 (click)="confirmDeleteProduct(product)"></button>
                     </div>
-                </td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.categoryName }}</td>
-                <td class="text-center"><p-tag
-                    severity="warning"
-                    value="{{ product.lastModifiedBy }}"/>
-                </td>
-                <td>{{ product.lastModifiedDate | date:"dd/MM/yyyy - HH:mm:ss" }}</td>
-                <td class="text-center" [ngClass]="{
-                      'text-green-300 font-semibold': product.active,
-                      'text-red-300': !product.active}">
-                    <p-tag
-                        [severity]="product.active ? 'success' : 'danger'"
-                        value="{{ product.active ? 'Ativo' : 'Inativo' }}"/>
                 </td>
             </tr>
         </ng-template>

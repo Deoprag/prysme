@@ -1,6 +1,3 @@
-import {Customer} from "./customer";
-import {User} from "./user";
-import {SalesOrder} from "./sales-order";
 import {ItemProduct} from "./item-product";
 import {NFStatus} from "./nfstatus";
 import {DiscountType} from "./discount-type";
@@ -10,9 +7,11 @@ export class NF {
     nfKey: string;
     issueDate: Date;
     dueDate: Date;
-    customer: Customer;
-    seller: User;
-    salesOrder: SalesOrder;
+    customerId: number;
+    customer: string;
+    sellerId: number;
+    seller: string;
+    salesOrderId: number;
     items: ItemProduct[] = [];
     totalValue: number;
     discount: number;

@@ -1,9 +1,9 @@
-import {User} from "./user";
-
 export class Goal {
     id: number;
     goal: number;
-    seller: User;
+    currentProgress: number;
+    seller: string;
+    sellerId: number;
     startDate: Date;
     endDate: Date;
     createdDate: Date;

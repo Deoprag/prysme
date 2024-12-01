@@ -12,7 +12,7 @@ import {authGuard} from './auth/auth.guard';
                 children: [
                     {
                         path: '',
-                        loadChildren: () => import('./layout/dashboard/dashboard.module').then(m => m.DashboardModule),
+                        loadChildren: () => import('./layout/home/home.module').then(m => m.HomeModule),
                         canActivate: [authGuard]
                     },
                     {
@@ -38,6 +38,16 @@ import {authGuard} from './auth/auth.guard';
                     {
                         path: '',
                         loadChildren: () => import('./layout/goal/goal-routing.module').then(m => m.GoalsRoutingModule),
+                        canActivate: [authGuard]
+                    },
+                    {
+                        path: '',
+                        loadChildren: () => import('./layout/seller/seller-routing.module').then(m => m.SellerRoutingModule),
+                        canActivate: [authGuard]
+                    },
+                    {
+                        path: '',
+                        loadChildren: () => import('./layout/sales-order/sales-order-routing.module').then(m => m.SalesOrderRoutingModule),
                         canActivate: [authGuard]
                     },
                 ]

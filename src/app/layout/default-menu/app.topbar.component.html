@@ -1,3 +1,4 @@
+<p-confirmDialog/>
 <div class="layout-topbar">
 
     <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
@@ -14,17 +15,17 @@
     </button>
 
     <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
-        <button class="p-link layout-topbar-button">
+        <button class="p-link layout-topbar-button" routerLink="tasks">
             <i class="pi pi-calendar"></i>
             <span>Calendario</span>
-        </button>
-        <button class="p-link layout-topbar-button">
-            <i class="pi pi-user"></i>
-            <span>Perfil</span>
         </button>
         <button class="p-link layout-topbar-button" (click)="layoutService.showConfigSidebar()">
             <i class="pi pi-cog"></i>
             <span>Configurações</span>
+        </button>
+        <button class="p-link layout-topbar-button" (click)="logoff()">
+            <i class="pi pi-sign-out"></i>
+            <span>Sair</span>
         </button>
     </div>
 </div>

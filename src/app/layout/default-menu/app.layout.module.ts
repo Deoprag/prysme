@@ -17,6 +17,8 @@ import { AppFooterComponent } from './app.footer.component';
 import { AppConfigModule } from '../../config/config.module';
 import { AppSidebarComponent } from "./app.sidebar.component";
 import { AppLayoutComponent } from "./app.layout.component";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {SpinnerComponent} from "../../config/components/spinner/spinner.component";
 
 @NgModule({
     declarations: [
@@ -39,7 +41,9 @@ import { AppLayoutComponent } from "./app.layout.component";
         InputSwitchModule,
         RippleModule,
         RouterModule,
-        AppConfigModule
+        AppConfigModule,
+        ConfirmDialogModule,
+        SpinnerComponent
     ],
     exports: [AppLayoutComponent]
 })

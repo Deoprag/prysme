@@ -1,0 +1,177 @@
+<spinner [show]="loader"></spinner>
+<div class="grid">
+<!--    <div class="col-12 lg:col-6 xl:col-3">-->
+<!--        <div class="card mb-0">-->
+<!--            <div class="flex justify-content-between mb-3">-->
+<!--                <div>-->
+<!--                    <span class="block text-500 font-medium mb-3">Clientes</span>-->
+<!--                    <div class="text-900 font-medium text-xl">152</div>-->
+<!--                </div>-->
+<!--                <div class="flex align-items-center justify-content-center bg-blue-100 border-round"-->
+<!--                     [ngStyle]="{width: '2.5rem', height: '2.5rem'}">-->
+<!--                    <i class="pi pi-shopping-cart text-blue-500 text-xl"></i>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <span class="text-green-500 font-medium">+24 </span>-->
+<!--            <span class="text-500">desde a última visita</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="col-12 lg:col-6 xl:col-3">-->
+<!--        <div class="card mb-0">-->
+<!--            <div class="flex justify-content-between mb-3">-->
+<!--                <div>-->
+<!--                    <span class="block text-500 font-medium mb-3">Vendas</span>-->
+<!--                    <div class="text-900 font-medium text-xl">R$2.100,00</div>-->
+<!--                </div>-->
+<!--                <div class="flex align-items-center justify-content-center bg-orange-100 border-round"-->
+<!--                     [ngStyle]="{width: '2.5rem', height: '2.5rem'}">-->
+<!--                    <i class="pi pi-map-marker text-orange-500 text-xl"></i>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <span class="text-green-500 font-medium">%52+ </span>-->
+<!--            <span class="text-500">desde a última semana</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="col-12 lg:col-6 xl:col-3">-->
+<!--        <div class="card mb-0">-->
+<!--            <div class="flex justify-content-between mb-3">-->
+<!--                <div>-->
+<!--                    <span class="block text-500 font-medium mb-3">Clientes</span>-->
+<!--                    <div class="text-900 font-medium text-xl">28441</div>-->
+<!--                </div>-->
+<!--                <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"-->
+<!--                     [ngStyle]="{width: '2.5rem', height: '2.5rem'}">-->
+<!--                    <i class="pi pi-inbox text-cyan-500 text-xl"></i>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <span class="text-green-500 font-medium">520  </span>-->
+<!--            <span class="text-500">novos registrados</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="col-12 lg:col-6 xl:col-3">-->
+<!--        <div class="card mb-0">-->
+<!--            <div class="flex justify-content-between mb-3">-->
+<!--                <div>-->
+<!--                    <span class="block text-500 font-medium mb-3">Comentários</span>-->
+<!--                    <div class="text-900 font-medium text-xl">152 Não lidos</div>-->
+<!--                </div>-->
+<!--                <div class="flex align-items-center justify-content-center bg-purple-100 border-round"-->
+<!--                     [ngStyle]="{width: '2.5rem', height: '2.5rem'}">-->
+<!--                    <i class="pi pi-comment text-purple-500 text-xl"></i>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <span class="text-green-500 font-medium">85 </span>-->
+<!--            <span class="text-500">respondidos</span>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <div class="col-12 lg:col-6">
+        <div class="card">
+            <p-table *ngIf="tasks && tasks.length > 0; else noTasks"
+                     [paginator]="true"
+                     [scrollable]="true"
+                     [rows]="10"
+                     [value]="tasks" class="p-datatable-sm surface-0">
+                <ng-template pTemplate="caption">
+                    <div class="p-mt-4 flex justify-content-center align-items-center gap-2">
+                        <div class="text-4xl">
+                            <h4 class="text-center flex-grow-1">Tarefas para a
+                                data: {{ today | date: "dd/MM/yyyy" }}</h4>
+                        </div>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="p-3 text-left">Título</th>
+                        <th class="p-3 text-left">Descrição</th>
+                        <th class="p-3"></th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-task>
+                    <tr>
+                        <td class="p-3 text-left">
+                            <span>{{ task.title }}</span>
+                        </td>
+                        <td class="p-3 text-left">
+                            <span>{{ truncateText(task.description, 50) }}</span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <button pButton icon="pi pi-eye" (click)="showTask(task)"
+                                    class="p-button-sm p-button-primary"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <ng-template #noTasks>
+                <p class="p-3 text-center text-red-400 font-semibold text-2xl">Nenhuma tarefa para a
+                    data: {{ today | date: "dd/MM/yyyy" }}</p>
+            </ng-template>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-6">
+        <div class="card shadow-lg p-4 mb-4 rounded-lg">
+            <h5 class="text-xl font-semibold text-gray-700 mb-3">Meta Atual</h5>
+
+            <div *ngIf="goal; else noGoal">
+                <div class="flex flex-column align-items-center justify-content-center">
+                    <p-chart type="doughnut" [data]="goalChartData" [options]="goalChartOptions" style="max-width: 300px; max-height: 300px;"></p-chart>
+                    <div class="mt-4 text-center">
+                        <p class="text-lg font-semibold text-gray-800">
+                            Meta: {{ goal.goal | currency:'BRL':'symbol':'1.2-2' }}
+                        </p>
+                        <p class="text-md text-gray-500">
+                            Concluído: {{ goal.currentProgress | currency:'BRL':'symbol':'1.2-2' }}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            Progresso: {{ (goal.currentProgress / goal.goal * 100).toFixed(2) }}%
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #noGoal>
+                <p class="p-3 text-center text-red-500 font-semibold text-xl">Nenhuma meta em aberto</p>
+            </ng-template>
+        </div>
+    </div>
+</div>
+
+<p-dialog header="Tarefa"
+          [(visible)]="taskDialog"
+          [modal]="true"
+          [style]="{width: '50vw'}"
+          [breakpoints]="{ '1379px': '70vw', '767px': '90vw' }"
+          [draggable]="false">
+    <div class="grid p-fluid p-2">
+        <div class="col-12">
+            <div class="p-field">
+                <label for="newContactCustomer">Título</label>
+                <input id="newContactCustomer" type="text" pInputText [(ngModel)]="selectedTask.title" readOnly/>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="p-field">
+                <label for="notes">Descrição</label>
+                <textarea pInputTextarea
+                          name="Descrição"
+                          id="notes"
+                          [(ngModel)]="selectedTask.description"
+                          [autoResize]="true"
+                          readOnly
+                          class="overflow-auto"
+                          style="min-height: 150px; max-height: 150px"
+                          required
+                          placeholder="Digite a descrição da tarefa">
+                    </textarea>
+            </div>
+        </div>
+    </div>
+    <p-footer>
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-danger"
+                (click)="taskDialog = false"></button>
+    </p-footer>
+</p-dialog>
+

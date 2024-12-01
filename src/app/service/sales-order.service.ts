@@ -19,12 +19,28 @@ export class SalesOrderService {
         return this.http.get<SalesOrder>(`${this.baseUrl}/${id}`);
     }
 
+    findAllByCustomerId(id: number): Observable<SalesOrder> {
+        return this.http.get<SalesOrder>(`${this.baseUrl}/findAllByCustomerId/${id}`);
+    }
+
+    findAllByTeamId(id: number): Observable<SalesOrder> {
+        return this.http.get<SalesOrder>(`${this.baseUrl}/findAllByTeamId/${id}`);
+    }
+
     create(salesOrder: SalesOrder): Observable<SalesOrder> {
         return this.http.post<SalesOrder>(`${this.baseUrl}/create`, salesOrder);
     }
 
     update(salesOrder: SalesOrder): Observable<SalesOrder> {
         return this.http.put<SalesOrder>(`${this.baseUrl}/save`, salesOrder);
+    }
+
+    approveById(id: number): Observable<SalesOrder> {
+        return this.http.get<SalesOrder>(`${this.baseUrl}/approveById/${id}`);
+    }
+
+    disapproveById(id: number): Observable<SalesOrder> {
+        return this.http.get<SalesOrder>(`${this.baseUrl}/disapproveById/${id}`);
     }
 
     delete(id: number): Observable<void> {

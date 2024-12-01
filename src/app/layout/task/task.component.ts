@@ -56,12 +56,6 @@ export class TaskComponent implements OnInit {
         this.refresh();
     }
 
-    currentDate(): Date {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return today;
-    }
-
     refresh() {
         this.spinner = true;
         this.taskService.findAllByUsername(this.authService.getUsername(), this.date).subscribe({

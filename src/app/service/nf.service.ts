@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NF } from '../model/nf';
+import {SalesOrder} from "../model/sales-order";
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +18,10 @@ export class NFService {
 
     findById(id: number): Observable<NF> {
         return this.http.get<NF>(`${this.baseUrl}/${id}`);
+    }
+
+    findAllByCustomerId(id: number): Observable<NF> {
+        return this.http.get<NF>(`${this.baseUrl}/findAllByCustomerId/${id}`);
     }
 
     create(nF: NF): Observable<NF> {

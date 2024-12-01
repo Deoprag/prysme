@@ -17,6 +17,7 @@ import {TagModule} from "primeng/tag";
 import {ToastModule} from "primeng/toast";
 import {ProductCategory} from "../../../model/product-category";
 import {ProductCategoryService} from "../../../service/product-category.service";
+import {UtilsService} from "../../../service/utils.service";
 
 @Component({
     selector: 'product-category',
@@ -54,12 +55,17 @@ export class ProductCategoryComponent implements OnInit {
     constructor(
         private productCategoryService: ProductCategoryService,
         private confirmationService: ConfirmationService,
+        private utilsService: UtilsService,
         private messageService: MessageService,
     ) {
     }
 
     ngOnInit() {
         this.refresh();
+    }
+
+    exportCSV() {
+        this.utilsService.exportToCSV(this.productCategories, 'Categorias de Produto')
     }
 
     refresh() {

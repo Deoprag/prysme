@@ -40,6 +40,14 @@ import {InputIconModule} from "primeng/inputicon";
 import {ItemProduct} from "../../../model/item-product";
 import {CheckboxModule} from "primeng/checkbox";
 import {QuotationService} from "../../../service/quotation.service";
+import {TabViewModule} from "primeng/tabview";
+import {SalesOrder} from "../../../model/sales-order";
+import {NF} from "../../../model/nf";
+import {NFService} from "../../../service/nf.service";
+import {SalesOrderService} from "../../../service/sales-order.service";
+import {DiscountType} from "../../../model/discount-type";
+import {NFStatus} from "../../../model/nfstatus";
+import {Ripple} from "primeng/ripple";
 
 @Component({
     selector: 'wallet',
@@ -73,13 +81,14 @@ import {QuotationService} from "../../../service/quotation.service";
         IconFieldModule,
         InputIconModule,
         CheckboxModule,
+        TabViewModule,
+        Ripple,
     ],
     providers: [MessageService, ConfirmationService],
     templateUrl: './wallet.component.html',
     styleUrl: './wallet.component.scss'
 })
 export class WalletComponent implements OnInit {
-    protected readonly CustomerStatus = CustomerStatus;
     spinner: boolean = false;
     isUnproductive: boolean = false;
     clientDialog: boolean = false;
@@ -87,14 +96,27 @@ export class WalletComponent implements OnInit {
     presentationDialog: boolean = false;
     proposalDialog: boolean = false;
     negotiationDialog: boolean = false;
+    editQuotation: boolean = false;
+    editSalesOrder: boolean = false;
+    selectedQuotation: boolean = false;
+    selectedSalesOrder: boolean = false;
 
     active: number | undefined = 0;
     customers: Customer[] = [];
-    products: any[] = [];
+    products: Product[] = [];
     quotation: Quotation = new Quotation();
-    selectedProducts: ItemProduct[] = [];
+    quotationList: Quotation[] = [];
+    salesOrderList: SalesOrder[] = [];
+    salesOrder: SalesOrder = new SalesOrder();
+    nf: NF = new NF();
+    nFList: NF[] = [];
+    selectedProducts: Product[] = [];
+    quotationProducts: ItemProduct[] = [];
+    salesOrderProducts: ItemProduct[] = [];
     contactOptions: { label: string, value: string }[] = [];
+    statusOptions: any = CustomerStatus.getOptions();
     contactTypes: any = ContactType.getOptions();
+    discountTypes: any = DiscountType.getOptions();
     draggedCustomer: Customer;
     selectedCustomer: Customer = new Customer();
     customerStatus: CustomerStatus;
@@ -106,6 +128,9 @@ export class WalletComponent implements OnInit {
         private customerService: CustomerService,
         private messageService: MessageService,
         private quotationService: QuotationService,
+        private salesOrderService: SalesOrderService,
+        private nFService: NFService,
+        private confirmationService: ConfirmationService,
         private authService: AuthService,
         private productService: ProductService,
         private contactService: ContactService,
@@ -116,14 +141,27 @@ export class WalletComponent implements OnInit {
         this.refresh();
     }
 
+    findStatusOption(customerStatus: CustomerStatus): any {
+        return this.statusOptions.find((option: any) => option.value === customerStatus);
+    }
+
     async refresh() {
         this.spinner = true;
         this.isUnproductive = false;
+        this.selectedQuotation = false;
+        this.selectedSalesOrder = false;
         this.active = 0;
         this.customers = [];
         this.products = [];
         this.quotation = new Quotation();
+        this.quotationList = [];
+        this.salesOrder = new SalesOrder();
+        this.salesOrderList = [];
+        this.nf = new NF();
+        this.nFList = [];
         this.selectedProducts = [];
+        this.quotationProducts = [];
+        this.salesOrderProducts = [];
         this.selectedCustomer = new Customer();
         this.contact = new Contact();
         this.contactList = [];
@@ -157,7 +195,7 @@ export class WalletComponent implements OnInit {
 
     async findAllCustomers() {
         return new Promise<void>((resolve, reject) => {
-            this.customerService.findAll().subscribe({
+            this.customerService.findAllBySellerId(Number.parseInt(localStorage.getItem('userId'))).subscribe({
                 next: (data: any) => {
                     this.customers = data;
                     resolve();
@@ -228,7 +266,7 @@ export class WalletComponent implements OnInit {
                     return;
 
                 case CustomerStatus.NEGOTIATION:
-                    this.negotiationDialog = true;
+                    this.checkIfItsAbleToNegotiate();
                     return;
 
                 case CustomerStatus.DELETED:
@@ -236,6 +274,34 @@ export class WalletComponent implements OnInit {
                     return;
             }
         }
+    }
+
+    checkIfItsAbleToNegotiate() {
+        this.spinner = true;
+        this.salesOrderService.findAllByCustomerId(this.selectedCustomer.id).subscribe({
+            next: (data: any) => {
+                this.spinner = false;
+                const hasConfirmedOrder = data.some((order: any) => order.status === 'CONFIRMED');
+                if (hasConfirmedOrder) {
+                    this.negotiationDialog = true;
+                } else {
+                    this.refresh();
+                    this.messageService.add({
+                        severity: 'warn',
+                        summary: 'Ops...',
+                        detail: 'O cliente não possui pedidos de venda liberado.'
+                    })
+                }
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.error.message
+                })
+            }
+        });
     }
 
     saveNew() {
@@ -298,8 +364,15 @@ export class WalletComponent implements OnInit {
         this.contact.customerId = this.selectedCustomer.id;
         if (this.isUnproductive) {
             this.contact.customerStatus = CustomerStatus.LOST;
-        } else {
+        }
+        if (this.presentationDialog) {
             this.contact.customerStatus = CustomerStatus.PRESENTATION;
+        }
+        if (this.proposalDialog) {
+            this.contact.customerStatus = CustomerStatus.PROPOSAL;
+        }
+        if (this.negotiationDialog) {
+            this.contact.customerStatus = CustomerStatus.NEGOTIATION;
         }
 
         return new Promise<void>((resolve, reject) => {
@@ -315,7 +388,6 @@ export class WalletComponent implements OnInit {
     }
 
     closeDialog(dialog: string) {
-        this.refresh();
         if (this.customerStatus) this.draggedCustomer.customerStatus = this.customerStatus;
         switch (dialog) {
             case CustomerStatus.CONTACT:
@@ -338,6 +410,7 @@ export class WalletComponent implements OnInit {
                 this.contactDialog = false;
                 return;
         }
+        this.refresh();
     }
 
     truncateText(text: string, maxLength: number) {
@@ -372,7 +445,6 @@ export class WalletComponent implements OnInit {
                 quantity: 1
             });
         });
-        console.log(this.quotation);
     }
 
     onProductsRemoved(event: any) {
@@ -382,7 +454,6 @@ export class WalletComponent implements OnInit {
                 this.quotation.items.splice(index, 1);
             }
         });
-        console.log(this.quotation);
     }
 
     changeItemQuantity(product: Product, event: any) {
@@ -391,7 +462,6 @@ export class WalletComponent implements OnInit {
         if (existingItem) {
             existingItem.quantity = event.value;
         }
-        console.log(this.quotation)
     }
 
     containsLetters(value: string): boolean {
@@ -429,7 +499,40 @@ export class WalletComponent implements OnInit {
         );
     }
 
-    async saveQuotation() {
+    saveQuotation() {
+        console.log(this.quotation);
+        if (this.quotation.id > 0) {
+            this.updateQuotation();
+        } else {
+            this.saveQuotationAsync();
+        }
+    }
+
+    updateQuotation() {
+        this.spinner = true;
+        this.quotationService.update(this.quotation).subscribe({
+            next: (data: any) => {
+                this.spinner = false;
+                this.editQuotation = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Orçamento salvo com sucesso!'
+                });
+                this.loadQuotations();
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: `Erro ao salvar orçamento: '${error.error?.message || 'Erro desconhecido'}'`
+                })
+            }
+        });
+    }
+
+    async saveQuotationAsync() {
         this.spinner = true;
         this.quotation.sellerId = Number.parseInt(localStorage.getItem("userId"));
         this.quotation.customerId = this.selectedCustomer.id;
@@ -452,7 +555,7 @@ export class WalletComponent implements OnInit {
 
         if (this.isContactValid()) {
             try {
-                await Promise.all([this.saveContactAsync(), this.saveQuotation()]);
+                await Promise.all([this.saveContactAsync(), this.saveQuotationAsync()]);
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Sucesso',
@@ -470,6 +573,7 @@ export class WalletComponent implements OnInit {
                 this.spinner = false;
             }
         } else {
+            this.spinner = false;
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Ops...',
@@ -477,5 +581,253 @@ export class WalletComponent implements OnInit {
             })
         }
     }
+
+    loadQuotations() {
+        this.spinner = true;
+        this.quotationService.findAllByCustomerId(this.selectedCustomer.id).subscribe({
+            next: (data: any) => {
+                this.spinner = false;
+                this.quotationList = data;
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.error.message
+                })
+            }
+        })
+    }
+
+    loadSalesOrders() {
+        this.spinner = true;
+        this.salesOrderService.findAllByCustomerId(this.selectedCustomer.id).subscribe({
+            next: (data: any) => {
+                this.spinner = false;
+                this.salesOrderList = data;
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.error.message
+                })
+            }
+        })
+    }
+
+    loadNFs() {
+        this.spinner = true;
+        this.nFService.findAllByCustomerId(this.selectedCustomer.id).subscribe({
+            next: (data: any) => {
+                this.spinner = false;
+                this.nFList = data;
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.error.message
+                })
+            }
+        })
+    }
+
+    calculateQuotationTotal(items: { quantity: number, price: number }[]): number {
+        return items.reduce((sum, item) => sum + item.price, 0);
+    }
+
+    selectQuotation(quotation: Quotation): void {
+        this.quotation = quotation;
+        this.selectedQuotation = true;
+        this.quotationProducts = [...quotation.items];
+        this.selectedProducts = [...this.products];
+        this.products = this.products.filter(
+            product => !quotation.items.some(item => item.productId === product.id)
+        );
+        this.selectedProducts = this.selectedProducts.filter(
+            product => quotation.items.some(item => item.productId === product.id)
+        );
+    }
+
+    async saveProposal() {
+        this.spinner = true;
+
+        if (this.isContactValid()) {
+            try {
+                await Promise.all([this.saveContactAsync(), this.saveSalesOrderAsync()]);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Contato e orçamento salvos com sucesso!'
+                });
+                this.closeDialog(CustomerStatus.PROPOSAL);
+                await this.refresh();
+            } catch (error) {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: `Erro ao salvar conato: '${error.error?.message || 'Erro desconhecido'}'`
+                });
+            } finally {
+                this.spinner = false;
+            }
+        } else {
+            this.spinner = false;
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Ops...',
+                detail: `Preencha os dados de contato!`
+            })
+        }
+    }
+
+    async saveSalesOrderAsync() {
+        const salesOrder = new SalesOrder();
+        salesOrder.quotationId = this.quotation.id;
+        salesOrder.customerId = this.selectedCustomer.id;
+        salesOrder.sellerId = Number.parseInt(localStorage.getItem("userId"));
+        salesOrder.items = [...this.quotation.items];
+
+        return new Promise<void>((resolve, reject) => {
+            this.salesOrderService.create(salesOrder).subscribe({
+                next: (response: any) => {
+                    resolve();
+                },
+                error: (error: any) => {
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    selectSalesOrder(salesOrder: SalesOrder) {
+        this.salesOrder = salesOrder;
+        this.selectedSalesOrder = true;
+        this.salesOrderProducts = [...salesOrder.items];
+        this.selectedProducts = [...this.products];
+        this.products = this.products.filter(
+            product => !salesOrder.items.some(item => item.productId === product.id)
+        );
+        this.selectedProducts = this.selectedProducts.filter(
+            product => salesOrder.items.some(item => item.productId === product.id)
+        );
+        this.calculateDiscount(this.nf);
+    }
+
+    async saveNegotiation() {
+        this.spinner = true;
+
+        if (this.isContactValid()) {
+            try {
+                await Promise.all([this.saveContactAsync(), this.saveNFAsync()]);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Contato e negociação salvos com sucesso!'
+                });
+                this.closeDialog(CustomerStatus.NEGOTIATION);
+                await this.refresh();
+            } catch (error) {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: `Erro ao salvar conato: '${error.error?.message || 'Erro desconhecido'}'`
+                });
+            } finally {
+                this.spinner = false;
+            }
+        } else {
+            this.spinner = false;
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Ops...',
+                detail: `Preencha os dados de contato!`
+            })
+        }
+    }
+
+    async saveNFAsync() {
+        this.spinner = true;
+        this.nf.dueDate = new Date();
+        this.nf.issueDate = new Date();
+        this.nf.customerId = this.selectedCustomer.id;
+        this.nf.sellerId = this.salesOrder.sellerId;
+        this.nf.salesOrderId = this.salesOrder.id;
+        this.nf.items = [...this.salesOrder.items];
+        this.nf.totalValue = this.calculateDiscount(this.nf);
+        this.nf.status = NFStatus.PENDING;
+
+        return new Promise<void>((resolve, reject) => {
+            this.nFService.create(this.nf).subscribe({
+                next: (response: any) => {
+                    resolve();
+                },
+                error: (error: any) => {
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    calculateDiscount(nf: NF) {
+        nf.totalValue = this.calculateQuotationTotal(this.salesOrder.items);
+
+        if (nf.discountType === DiscountType.PERCENTAGE) {
+            nf.totalValue -= (nf.totalValue * (nf.discount / 100));
+        } else if (nf.discountType === DiscountType.FIXED) {
+            nf.totalValue -= nf.discount;
+        }
+
+        nf.totalValue = parseFloat(nf.totalValue.toFixed(2));
+
+        return nf.totalValue;
+    }
+
+    confirmRemoveFromWallet() {
+        this.confirmationService.confirm({
+            message: 'Tem certeza que deseja remover o cliente do funil?',
+            header: 'Confirmação',
+            rejectLabel: 'Não', rejectButtonStyleClass: 'p-button-danger',
+            acceptLabel: 'Sim', acceptButtonStyleClass: 'p-button-secondary',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                this.removeFromWallet();
+            },
+            reject: () => {
+            }
+        });
+    }
+
+    removeFromWallet() {
+        this.spinner = true;
+        this.customerService.removeFromWallet(this.selectedCustomer.id).subscribe({
+            next: (response: any) => {
+                this.spinner = false;
+                this.refresh();
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Contato removido do funil com sucesso!'
+                });
+            },
+            error: (error: any) => {
+                this.spinner = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: `Erro ao remover do funil: '${error.error?.message || 'Erro desconhecido'}'`
+                });
+            }
+        })
+    }
+
+    protected readonly CustomerStatus = CustomerStatus;
+    protected readonly NFService = NFService;
+    protected readonly NFStatus = NFStatus;
+    protected readonly DiscountType = DiscountType;
 }
 

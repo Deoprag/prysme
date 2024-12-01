@@ -31,8 +31,8 @@ import {PermissionService} from "../../service/permission.service";
 import {PasswordModule} from "primeng/password";
 
 @Component({
-    selector: 'app-user',
-    templateUrl: './user.component.html',
+    selector: 'app-seller',
+    templateUrl: './seller.component.html',
     imports: [
         TableModule,
         ButtonModule,
@@ -63,18 +63,16 @@ import {PasswordModule} from "primeng/password";
     providers: [MessageService, ConfirmationService],
     standalone: true
 })
-export class UserComponent implements OnInit {
+export class SellerComponent implements OnInit {
     userDialog: boolean = false;
     resetPasswordDialog: boolean = false;
     spinner: boolean = false;
 
     permissions: Permission[];
-    selectedPermissions: Permission[] = [];
-    selectedTeam: Team;
     users: User[] = [];
     teams: Team[] = [];
     user: User = new User();
-    passwordConfirmation!: string;
+    passwordConfirmation!: String;
 
     genders: any[] = [
         { label: 'Masculino', value: 'M' },
@@ -99,7 +97,12 @@ export class UserComponent implements OnInit {
 
     refresh() {
         this.spinner = true;
+        this.permissions = [];
+        this.users = [];
+        this.teams = [];
+        this.user= new User();
         this.passwordConfirmation = '';
+
         if (this.authService.getRoles().includes("ADMIN")) {
             this.userService.findAll().subscribe({
                 next: (data: User[]) => {
@@ -183,9 +186,6 @@ export class UserComponent implements OnInit {
 
     editUser(user: User) {
         this.user = { ...user };
-        this.selectedPermissions = this.getSelectedPermissions(user.permissions);
-        this.selectedTeam = this.getSelectedTeam(user.teamId);
-        console.log(this.selectedTeam);
         this.userDialog = true;
     }
 
@@ -287,21 +287,6 @@ export class UserComponent implements OnInit {
         });
     }
 
-    clearUser() {
-        this.user = new User();
-        this.selectedPermissions = [];
-        this.selectedTeam = null;
-    }
-
-    onPermissionsChange() {
-        this.user.permissions = this.selectedPermissions.map(permission => permission.description);
-    }
-
-    onTeamChange() {
-        this.user.teamId = this.selectedTeam.id;
-        this.user.team = this.selectedTeam.name;
-    }
-
     resetPassword(user: User) {
         if (this.passwordConfirmation === user.password) {
             const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%:*?&]{8,}$/;
@@ -342,5 +327,9 @@ export class UserComponent implements OnInit {
                 detail: 'As senhas não coincidem'
             })
         }
+    }
+
+    clearUser() {
+        this.user = new User();
     }
 }
